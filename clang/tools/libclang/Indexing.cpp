@@ -272,11 +272,12 @@ public:
   }
 
   /// MacroDefined - This hook is called whenever a macro definition is seen.
-  void MacroDefined(const Token &Id, const MacroDirective *MD) override {}
+  void MacroDefined(SourceLocation HashLoc, const Token &Id,
+                    const MacroDirective *MD) override {}
 
   /// MacroUndefined - This hook is called whenever a macro #undef is seen.
   /// MI is released immediately following this callback.
-  void MacroUndefined(const Token &MacroNameTok,
+  void MacroUndefined(SourceLocation HashLoc, const Token &MacroNameTok,
                       const MacroDefinition &MD,
                       const MacroDirective *UD) override {}
 

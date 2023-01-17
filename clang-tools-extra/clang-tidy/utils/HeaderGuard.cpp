@@ -42,8 +42,8 @@ public:
     }
   }
 
-  void Ifndef(SourceLocation Loc, const Token &MacroNameTok,
-              const MacroDefinition &MD) override {
+  void Ifndef(SourceLocation HashLoc, SourceLocation Loc,
+              const Token &MacroNameTok, const MacroDefinition &MD) override {
     if (MD)
       return;
 
@@ -52,14 +52,15 @@ public:
         std::make_pair(Loc, MacroNameTok.getLocation());
   }
 
-  void MacroDefined(const Token &MacroNameTok,
+  void MacroDefined(SourceLocation HashLoc, const Token &MacroNameTok,
                     const MacroDirective *MD) override {
     // Record all defined macros. We store the whole token to get info on the
     // name later.
     Macros.emplace_back(MacroNameTok, MD->getMacroInfo());
   }
 
-  void Endif(SourceLocation Loc, SourceLocation IfLoc) override {
+  void Endif(SourceLocation HashLoc, SourceLocation Loc,
+             SourceLocation IfLoc) override {
     // Record all #endif and the corresponding #ifs (including #ifndefs).
     EndIfs[IfLoc] = Loc;
   }

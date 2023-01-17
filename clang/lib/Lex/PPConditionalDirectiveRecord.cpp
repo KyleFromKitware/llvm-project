@@ -72,28 +72,32 @@ void PPConditionalDirectiveRecord::addCondDirectiveLoc(
   CondDirectiveLocs.push_back(DirLoc);
 }
 
-void PPConditionalDirectiveRecord::If(SourceLocation Loc,
+void PPConditionalDirectiveRecord::If(SourceLocation HashLoc,
+                                      SourceLocation Loc,
                                       SourceRange ConditionRange,
                                       ConditionValueKind ConditionValue) {
   addCondDirectiveLoc(CondDirectiveLoc(Loc, CondDirectiveStack.back()));
   CondDirectiveStack.push_back(Loc);
 }
 
-void PPConditionalDirectiveRecord::Ifdef(SourceLocation Loc,
+void PPConditionalDirectiveRecord::Ifdef(SourceLocation HashLoc,
+                                         SourceLocation Loc,
                                          const Token &MacroNameTok,
                                          const MacroDefinition &MD) {
   addCondDirectiveLoc(CondDirectiveLoc(Loc, CondDirectiveStack.back()));
   CondDirectiveStack.push_back(Loc);
 }
 
-void PPConditionalDirectiveRecord::Ifndef(SourceLocation Loc,
+void PPConditionalDirectiveRecord::Ifndef(SourceLocation HashLoc,
+                                          SourceLocation Loc,
                                           const Token &MacroNameTok,
                                           const MacroDefinition &MD) {
   addCondDirectiveLoc(CondDirectiveLoc(Loc, CondDirectiveStack.back()));
   CondDirectiveStack.push_back(Loc);
 }
 
-void PPConditionalDirectiveRecord::Elif(SourceLocation Loc,
+void PPConditionalDirectiveRecord::Elif(SourceLocation HashLoc,
+                                        SourceLocation Loc,
                                         SourceRange ConditionRange,
                                         ConditionValueKind ConditionValue,
                                         SourceLocation IfLoc) {
@@ -101,35 +105,41 @@ void PPConditionalDirectiveRecord::Elif(SourceLocation Loc,
   CondDirectiveStack.back() = Loc;
 }
 
-void PPConditionalDirectiveRecord::Elifdef(SourceLocation Loc, const Token &,
+void PPConditionalDirectiveRecord::Elifdef(SourceLocation HashLoc,
+                                           SourceLocation Loc, const Token &,
                                            const MacroDefinition &) {
   addCondDirectiveLoc(CondDirectiveLoc(Loc, CondDirectiveStack.back()));
   CondDirectiveStack.back() = Loc;
 }
-void PPConditionalDirectiveRecord::Elifdef(SourceLocation Loc, SourceRange,
+void PPConditionalDirectiveRecord::Elifdef(SourceLocation HashLoc,
+                                           SourceLocation Loc, SourceRange,
                                            SourceLocation) {
   addCondDirectiveLoc(CondDirectiveLoc(Loc, CondDirectiveStack.back()));
   CondDirectiveStack.back() = Loc;
 }
 
-void PPConditionalDirectiveRecord::Elifndef(SourceLocation Loc, const Token &,
+void PPConditionalDirectiveRecord::Elifndef(SourceLocation HashLoc,
+                                            SourceLocation Loc, const Token &,
                                             const MacroDefinition &) {
   addCondDirectiveLoc(CondDirectiveLoc(Loc, CondDirectiveStack.back()));
   CondDirectiveStack.back() = Loc;
 }
-void PPConditionalDirectiveRecord::Elifndef(SourceLocation Loc, SourceRange,
+void PPConditionalDirectiveRecord::Elifndef(SourceLocation HashLoc,
+                                            SourceLocation Loc, SourceRange,
                                             SourceLocation) {
   addCondDirectiveLoc(CondDirectiveLoc(Loc, CondDirectiveStack.back()));
   CondDirectiveStack.back() = Loc;
 }
 
-void PPConditionalDirectiveRecord::Else(SourceLocation Loc,
+void PPConditionalDirectiveRecord::Else(SourceLocation HashLoc,
+                                        SourceLocation Loc,
                                         SourceLocation IfLoc) {
   addCondDirectiveLoc(CondDirectiveLoc(Loc, CondDirectiveStack.back()));
   CondDirectiveStack.back() = Loc;
 }
 
-void PPConditionalDirectiveRecord::Endif(SourceLocation Loc,
+void PPConditionalDirectiveRecord::Endif(SourceLocation HashLoc,
+                                         SourceLocation Loc,
                                          SourceLocation IfLoc) {
   addCondDirectiveLoc(CondDirectiveLoc(Loc, CondDirectiveStack.back()));
   assert(!CondDirectiveStack.empty());

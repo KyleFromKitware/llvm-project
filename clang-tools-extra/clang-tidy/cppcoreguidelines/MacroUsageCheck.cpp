@@ -33,7 +33,7 @@ public:
                       bool IgnoreCommandLine)
       : Check(Check), SM(SM), RegExp(RegExpStr), CheckCapsOnly(CapsOnly),
         IgnoreCommandLineMacros(IgnoreCommandLine) {}
-  void MacroDefined(const Token &MacroNameTok,
+  void MacroDefined(SourceLocation HashLoc, const Token &MacroNameTok,
                     const MacroDirective *MD) override {
     if (SM.isWrittenInBuiltinFile(MD->getLocation()) ||
         MD->getMacroInfo()->isUsedForHeaderGuard() ||

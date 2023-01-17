@@ -52,13 +52,14 @@ public:
     macroUsed(MacroNameTok, MD, Range.getBegin(), CheckAction::Rename);
   }
 
-  void MacroUndefined(const Token &MacroNameTok, const MacroDefinition &MD,
+  void MacroUndefined(SourceLocation HashLoc, const Token &MacroNameTok,
+                      const MacroDefinition &MD,
                       const MacroDirective *Undef) override {
     if (Undef != nullptr)
       macroUsed(MacroNameTok, MD, Undef->getLocation(), CheckAction::Warn);
   }
 
-  void MacroDefined(const Token &MacroNameTok,
+  void MacroDefined(SourceLocation HashLoc, const Token &MacroNameTok,
                     const MacroDirective *MD) override {
     if (!ReplacementFound && MD != nullptr) {
       // We check if the newly defined macro is one of the target replacements.
@@ -76,13 +77,13 @@ public:
     macroUsed(MacroNameTok, MD, Range.getBegin(), CheckAction::Warn);
   }
 
-  void Ifdef(SourceLocation Loc, const Token &MacroNameTok,
-             const MacroDefinition &MD) override {
+  void Ifdef(SourceLocation HashLoc, SourceLocation Loc,
+             const Token &MacroNameTok, const MacroDefinition &MD) override {
     macroUsed(MacroNameTok, MD, Loc, CheckAction::Warn);
   }
 
-  void Ifndef(SourceLocation Loc, const Token &MacroNameTok,
-              const MacroDefinition &MD) override {
+  void Ifndef(SourceLocation HashLoc, SourceLocation Loc,
+              const Token &MacroNameTok, const MacroDefinition &MD) override {
     macroUsed(MacroNameTok, MD, Loc, CheckAction::Warn);
   }
 

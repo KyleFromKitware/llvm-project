@@ -100,49 +100,65 @@ public:
   void moduleImport(SourceLocation ImportLoc, ModuleIdPath Path,
                     const Module *Imported) override;
   void EndOfMainFile() override;
-  void Ident(SourceLocation Loc, llvm::StringRef str) override;
+  void Ident(SourceLocation HashLoc, SourceLocation Loc,
+             llvm::StringRef str) override;
   void PragmaDirective(PragmaIntroducer Introducer) override;
-  void PragmaComment(SourceLocation Loc, const IdentifierInfo *Kind,
-                     llvm::StringRef Str) override;
-  void PragmaDetectMismatch(SourceLocation Loc, llvm::StringRef Name,
+  void PragmaComment(PragmaIntroducer Introducer, SourceLocation Loc,
+                     const IdentifierInfo *Kind, llvm::StringRef Str) override;
+  void PragmaDetectMismatch(PragmaIntroducer Introducer, SourceLocation Loc,
+                            llvm::StringRef Name,
                             llvm::StringRef Value) override;
-  void PragmaDebug(SourceLocation Loc, llvm::StringRef DebugType) override;
-  void PragmaMessage(SourceLocation Loc, llvm::StringRef Namespace,
+  void PragmaDebug(PragmaIntroducer Introducer, SourceLocation Loc,
+                   llvm::StringRef DebugType) override;
+  void PragmaMessage(PragmaIntroducer Introducer, SourceLocation Loc,
+                     llvm::StringRef Namespace,
                      PPCallbacks::PragmaMessageKind Kind,
                      llvm::StringRef Str) override;
-  void PragmaDiagnosticPush(SourceLocation Loc,
+  void PragmaDiagnosticPush(PragmaIntroducer Introducer, SourceLocation Loc,
                             llvm::StringRef Namespace) override;
-  void PragmaDiagnosticPop(SourceLocation Loc,
+  void PragmaDiagnosticPop(PragmaIntroducer Introducer, SourceLocation Loc,
                            llvm::StringRef Namespace) override;
-  void PragmaDiagnostic(SourceLocation Loc, llvm::StringRef Namespace,
-                        diag::Severity mapping, llvm::StringRef Str) override;
-  void PragmaOpenCLExtension(SourceLocation NameLoc, const IdentifierInfo *Name,
+  void PragmaDiagnostic(PragmaIntroducer Introducer, SourceLocation Loc,
+                        llvm::StringRef Namespace, diag::Severity mapping,
+                        llvm::StringRef Str) override;
+  void PragmaOpenCLExtension(PragmaIntroducer Introducer,
+                             SourceLocation NameLoc, const IdentifierInfo *Name,
                              SourceLocation StateLoc, unsigned State) override;
-  void PragmaWarning(SourceLocation Loc, PragmaWarningSpecifier WarningSpec,
+  void PragmaWarning(PragmaIntroducer Introducer, SourceLocation Loc,
+                     PragmaWarningSpecifier WarningSpec,
                      llvm::ArrayRef<int> Ids) override;
-  void PragmaWarningPush(SourceLocation Loc, int Level) override;
-  void PragmaWarningPop(SourceLocation Loc) override;
-  void PragmaExecCharsetPush(SourceLocation Loc, StringRef Str) override;
-  void PragmaExecCharsetPop(SourceLocation Loc) override;
+  void PragmaWarningPush(PragmaIntroducer Introducer, SourceLocation Loc,
+                         int Level) override;
+  void PragmaWarningPop(PragmaIntroducer Introducer,
+                        SourceLocation Loc) override;
+  void PragmaExecCharsetPush(PragmaIntroducer Introducer, SourceLocation Loc,
+                             StringRef Str) override;
+  void PragmaExecCharsetPop(PragmaIntroducer Introducer,
+                            SourceLocation Loc) override;
   void MacroExpands(const Token &MacroNameTok, const MacroDefinition &MD,
                     SourceRange Range, const MacroArgs *Args) override;
-  void MacroDefined(const Token &MacroNameTok,
+  void MacroDefined(SourceLocation HashLoc, const Token &MacroNameTok,
                     const MacroDirective *MD) override;
-  void MacroUndefined(const Token &MacroNameTok, const MacroDefinition &MD,
+  void MacroUndefined(SourceLocation HashLoc, const Token &MacroNameTok,
+                      const MacroDefinition &MD,
                       const MacroDirective *Undef) override;
   void Defined(const Token &MacroNameTok, const MacroDefinition &MD,
                SourceRange Range) override;
   void SourceRangeSkipped(SourceRange Range, SourceLocation EndifLoc) override;
-  void If(SourceLocation Loc, SourceRange ConditionRange,
+  void If(SourceLocation HashLoc, SourceLocation Loc,
+          SourceRange ConditionRange,
           ConditionValueKind ConditionValue) override;
-  void Elif(SourceLocation Loc, SourceRange ConditionRange,
-            ConditionValueKind ConditionValue, SourceLocation IfLoc) override;
-  void Ifdef(SourceLocation Loc, const Token &MacroNameTok,
-             const MacroDefinition &MD) override;
-  void Ifndef(SourceLocation Loc, const Token &MacroNameTok,
-              const MacroDefinition &MD) override;
-  void Else(SourceLocation Loc, SourceLocation IfLoc) override;
-  void Endif(SourceLocation Loc, SourceLocation IfLoc) override;
+  void Elif(SourceLocation HashLoc, SourceLocation Loc,
+            SourceRange ConditionRange, ConditionValueKind ConditionValue,
+            SourceLocation IfLoc) override;
+  void Ifdef(SourceLocation HashLoc, SourceLocation Loc,
+             const Token &MacroNameTok, const MacroDefinition &MD) override;
+  void Ifndef(SourceLocation HashLoc, SourceLocation Loc,
+              const Token &MacroNameTok, const MacroDefinition &MD) override;
+  void Else(SourceLocation HashLoc, SourceLocation Loc,
+            SourceLocation IfLoc) override;
+  void Endif(SourceLocation HashLoc, SourceLocation Loc,
+             SourceLocation IfLoc) override;
 
   // Helper functions.
 

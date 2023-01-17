@@ -182,45 +182,47 @@ void ExpandModularHeadersPPCallbacks::EndOfMainFile() {
 // Handle all other callbacks.
 // Just parse to the corresponding location to generate the same callback for
 // the PPCallbacks registered in our custom preprocessor.
-void ExpandModularHeadersPPCallbacks::Ident(SourceLocation Loc, StringRef) {
+void ExpandModularHeadersPPCallbacks::Ident(SourceLocation HashLoc,
+                                            SourceLocation Loc, StringRef) {
   parseToLocation(Loc);
 }
 void ExpandModularHeadersPPCallbacks::PragmaDirective(
     PragmaIntroducer Introducer) {
   parseToLocation(Introducer.Loc);
 }
-void ExpandModularHeadersPPCallbacks::PragmaComment(SourceLocation Loc,
+void ExpandModularHeadersPPCallbacks::PragmaComment(PragmaIntroducer Introducer,
+                                                    SourceLocation Loc,
                                                     const IdentifierInfo *,
                                                     StringRef) {
   parseToLocation(Loc);
 }
-void ExpandModularHeadersPPCallbacks::PragmaDetectMismatch(SourceLocation Loc,
-                                                           StringRef,
-                                                           StringRef) {
+void ExpandModularHeadersPPCallbacks::PragmaDetectMismatch(
+    PragmaIntroducer Introducer, SourceLocation Loc, StringRef, StringRef) {
   parseToLocation(Loc);
 }
-void ExpandModularHeadersPPCallbacks::PragmaDebug(SourceLocation Loc,
+void ExpandModularHeadersPPCallbacks::PragmaDebug(PragmaIntroducer Introducer,
+                                                  SourceLocation Loc,
                                                   StringRef) {
   parseToLocation(Loc);
 }
-void ExpandModularHeadersPPCallbacks::PragmaMessage(SourceLocation Loc,
+void ExpandModularHeadersPPCallbacks::PragmaMessage(PragmaIntroducer Introducer,
+                                                    SourceLocation Loc,
                                                     StringRef,
                                                     PragmaMessageKind,
                                                     StringRef) {
   parseToLocation(Loc);
 }
-void ExpandModularHeadersPPCallbacks::PragmaDiagnosticPush(SourceLocation Loc,
-                                                           StringRef) {
+void ExpandModularHeadersPPCallbacks::PragmaDiagnosticPush(
+    PragmaIntroducer Introducer, SourceLocation Loc, StringRef) {
   parseToLocation(Loc);
 }
-void ExpandModularHeadersPPCallbacks::PragmaDiagnosticPop(SourceLocation Loc,
-                                                          StringRef) {
+void ExpandModularHeadersPPCallbacks::PragmaDiagnosticPop(
+    PragmaIntroducer Introducer, SourceLocation Loc, StringRef) {
   parseToLocation(Loc);
 }
-void ExpandModularHeadersPPCallbacks::PragmaDiagnostic(SourceLocation Loc,
-                                                       StringRef,
-                                                       diag::Severity,
-                                                       StringRef) {
+void ExpandModularHeadersPPCallbacks::PragmaDiagnostic(
+    PragmaIntroducer Introducer, SourceLocation Loc, StringRef, diag::Severity,
+    StringRef) {
   parseToLocation(Loc);
 }
 void ExpandModularHeadersPPCallbacks::HasInclude(SourceLocation Loc, StringRef,
@@ -229,29 +231,31 @@ void ExpandModularHeadersPPCallbacks::HasInclude(SourceLocation Loc, StringRef,
   parseToLocation(Loc);
 }
 void ExpandModularHeadersPPCallbacks::PragmaOpenCLExtension(
-    SourceLocation NameLoc, const IdentifierInfo *, SourceLocation StateLoc,
-    unsigned) {
+    PragmaIntroducer Introducer, SourceLocation NameLoc, const IdentifierInfo *,
+    SourceLocation StateLoc, unsigned) {
   // FIXME: Figure out whether it's the right location to parse to.
   parseToLocation(NameLoc);
 }
-void ExpandModularHeadersPPCallbacks::PragmaWarning(SourceLocation Loc,
+void ExpandModularHeadersPPCallbacks::PragmaWarning(PragmaIntroducer Introducer,
+                                                    SourceLocation Loc,
                                                     PragmaWarningSpecifier,
                                                     ArrayRef<int>) {
   parseToLocation(Loc);
 }
-void ExpandModularHeadersPPCallbacks::PragmaWarningPush(SourceLocation Loc,
-                                                        int) {
+void ExpandModularHeadersPPCallbacks::PragmaWarningPush(
+    PragmaIntroducer Introducer, SourceLocation Loc, int) {
   parseToLocation(Loc);
 }
-void ExpandModularHeadersPPCallbacks::PragmaWarningPop(SourceLocation Loc) {
+void ExpandModularHeadersPPCallbacks::PragmaWarningPop(
+    PragmaIntroducer Introducer, SourceLocation Loc) {
   parseToLocation(Loc);
 }
 void ExpandModularHeadersPPCallbacks::PragmaAssumeNonNullBegin(
-    SourceLocation Loc) {
+    PragmaIntroducer Introducer, SourceLocation Loc) {
   parseToLocation(Loc);
 }
 void ExpandModularHeadersPPCallbacks::PragmaAssumeNonNullEnd(
-    SourceLocation Loc) {
+    PragmaIntroducer Introducer, SourceLocation Loc) {
   parseToLocation(Loc);
 }
 void ExpandModularHeadersPPCallbacks::MacroExpands(const Token &MacroNameTok,
@@ -261,12 +265,14 @@ void ExpandModularHeadersPPCallbacks::MacroExpands(const Token &MacroNameTok,
   // FIXME: Figure out whether it's the right location to parse to.
   parseToLocation(Range.getBegin());
 }
-void ExpandModularHeadersPPCallbacks::MacroDefined(const Token &MacroNameTok,
+void ExpandModularHeadersPPCallbacks::MacroDefined(SourceLocation HashLoc,
+                                                   const Token &MacroNameTok,
                                                    const MacroDirective *MD) {
   parseToLocation(MD->getLocation());
 }
 void ExpandModularHeadersPPCallbacks::MacroUndefined(
-    const Token &, const MacroDefinition &, const MacroDirective *Undef) {
+    SourceLocation HashLoc, const Token &, const MacroDefinition &,
+    const MacroDirective *Undef) {
   if (Undef)
     parseToLocation(Undef->getLocation());
 }
@@ -281,26 +287,32 @@ void ExpandModularHeadersPPCallbacks::SourceRangeSkipped(
   // FIXME: Figure out whether it's the right location to parse to.
   parseToLocation(EndifLoc);
 }
-void ExpandModularHeadersPPCallbacks::If(SourceLocation Loc, SourceRange,
+void ExpandModularHeadersPPCallbacks::If(SourceLocation HashLoc,
+                                         SourceLocation Loc, SourceRange,
                                          ConditionValueKind) {
   parseToLocation(Loc);
 }
-void ExpandModularHeadersPPCallbacks::Elif(SourceLocation Loc, SourceRange,
+void ExpandModularHeadersPPCallbacks::Elif(SourceLocation HashLoc,
+                                           SourceLocation Loc, SourceRange,
                                            ConditionValueKind, SourceLocation) {
   parseToLocation(Loc);
 }
-void ExpandModularHeadersPPCallbacks::Ifdef(SourceLocation Loc, const Token &,
+void ExpandModularHeadersPPCallbacks::Ifdef(SourceLocation HashLoc,
+                                            SourceLocation Loc, const Token &,
                                             const MacroDefinition &) {
   parseToLocation(Loc);
 }
-void ExpandModularHeadersPPCallbacks::Ifndef(SourceLocation Loc, const Token &,
+void ExpandModularHeadersPPCallbacks::Ifndef(SourceLocation HashLoc,
+                                             SourceLocation Loc, const Token &,
                                              const MacroDefinition &) {
   parseToLocation(Loc);
 }
-void ExpandModularHeadersPPCallbacks::Else(SourceLocation Loc, SourceLocation) {
+void ExpandModularHeadersPPCallbacks::Else(SourceLocation HashLoc,
+                                           SourceLocation Loc, SourceLocation) {
   parseToLocation(Loc);
 }
-void ExpandModularHeadersPPCallbacks::Endif(SourceLocation Loc,
+void ExpandModularHeadersPPCallbacks::Endif(SourceLocation HashLoc,
+                                            SourceLocation Loc,
                                             SourceLocation) {
   parseToLocation(Loc);
 }

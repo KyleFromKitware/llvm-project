@@ -19,7 +19,7 @@ public:
   MacroParenthesesPPCallbacks(Preprocessor *PP, MacroParenthesesCheck *Check)
       : PP(PP), Check(Check) {}
 
-  void MacroDefined(const Token &MacroNameTok,
+  void MacroDefined(SourceLocation HashLoc, const Token &MacroNameTok,
                     const MacroDirective *MD) override {
     replacementList(MacroNameTok, MD->getMacroInfo());
     argument(MacroNameTok, MD->getMacroInfo());

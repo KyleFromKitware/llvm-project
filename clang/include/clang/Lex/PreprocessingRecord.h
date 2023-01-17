@@ -522,8 +522,10 @@ class Token;
 
     void MacroExpands(const Token &Id, const MacroDefinition &MD,
                       SourceRange Range, const MacroArgs *Args) override;
-    void MacroDefined(const Token &Id, const MacroDirective *MD) override;
-    void MacroUndefined(const Token &Id, const MacroDefinition &MD,
+    void MacroDefined(SourceLocation HashLoc, const Token &Id,
+                      const MacroDirective *MD) override;
+    void MacroUndefined(SourceLocation HashLoc, const Token &Id,
+                        const MacroDefinition &MD,
                         const MacroDirective *Undef) override;
     void InclusionDirective(SourceLocation HashLoc, const Token &IncludeTok,
                             StringRef FileName, bool IsAngled,
@@ -531,16 +533,17 @@ class Token;
                             OptionalFileEntryRef File, StringRef SearchPath,
                             StringRef RelativePath, const Module *Imported,
                             SrcMgr::CharacteristicKind FileType) override;
-    void Ifdef(SourceLocation Loc, const Token &MacroNameTok,
-               const MacroDefinition &MD) override;
-    void Ifndef(SourceLocation Loc, const Token &MacroNameTok,
-                const MacroDefinition &MD) override;
+    void Ifdef(SourceLocation HashLoc, SourceLocation Loc,
+               const Token &MacroNameTok, const MacroDefinition &MD) override;
+    void Ifndef(SourceLocation HashLoc, SourceLocation Loc,
+                const Token &MacroNameTok, const MacroDefinition &MD) override;
 
     using PPCallbacks::Elifdef;
     using PPCallbacks::Elifndef;
-    void Elifdef(SourceLocation Loc, const Token &MacroNameTok,
-                 const MacroDefinition &MD) override;
-    void Elifndef(SourceLocation Loc, const Token &MacroNameTok,
+    void Elifdef(SourceLocation HashLoc, SourceLocation Loc,
+                 const Token &MacroNameTok, const MacroDefinition &MD) override;
+    void Elifndef(SourceLocation HashLoc, SourceLocation Loc,
+                  const Token &MacroNameTok,
                   const MacroDefinition &MD) override;
 
     /// Hook called whenever the 'defined' operator is seen.
