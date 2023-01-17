@@ -71,7 +71,7 @@ public:
       : PP(PP), Check(Check) {}
 
   /// MacroDefined calls checkMacro for macros in the main file
-  void MacroDefined(const Token &MacroNameTok,
+  void MacroDefined(SourceLocation HashLoc, const Token &MacroNameTok,
                     const MacroDirective *MD) override {
     if (MD->getMacroInfo()->isBuiltinMacro())
       return;

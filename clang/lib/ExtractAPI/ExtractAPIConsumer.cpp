@@ -241,7 +241,7 @@ public:
                 Preprocessor &PP)
       : SM(SM), LCF(LCF), API(API), PP(PP) {}
 
-  void MacroDefined(const Token &MacroNameToken,
+  void MacroDefined(SourceLocation HashLoc, const Token &MacroNameToken,
                     const MacroDirective *MD) override {
     auto *MacroInfo = MD->getMacroInfo();
 
@@ -259,7 +259,8 @@ public:
   // If a macro gets undefined at some point during preprocessing of the inputs
   // it means that it isn't an exposed API and we should therefore not add a
   // macro definition for it.
-  void MacroUndefined(const Token &MacroNameToken, const MacroDefinition &MD,
+  void MacroUndefined(SourceLocation HashLoc, const Token &MacroNameToken,
+                      const MacroDefinition &MD,
                       const MacroDirective *Undef) override {
     // If this macro wasn't previously defined we don't need to do anything
     // here.

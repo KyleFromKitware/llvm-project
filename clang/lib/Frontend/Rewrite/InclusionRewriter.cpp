@@ -77,10 +77,12 @@ private:
                           OptionalFileEntryRef File, StringRef SearchPath,
                           StringRef RelativePath, const Module *Imported,
                           SrcMgr::CharacteristicKind FileType) override;
-  void If(SourceLocation Loc, SourceRange ConditionRange,
+  void If(SourceLocation HashLoc, SourceLocation Loc,
+          SourceRange ConditionRange,
           ConditionValueKind ConditionValue) override;
-  void Elif(SourceLocation Loc, SourceRange ConditionRange,
-            ConditionValueKind ConditionValue, SourceLocation IfLoc) override;
+  void Elif(SourceLocation HashLoc, SourceLocation Loc,
+            SourceRange ConditionRange, ConditionValueKind ConditionValue,
+            SourceLocation IfLoc) override;
   void WriteLineInfo(StringRef Filename, int Line,
                      SrcMgr::CharacteristicKind FileType,
                      StringRef Extra = StringRef());
@@ -196,14 +198,16 @@ void InclusionRewriter::InclusionDirective(
     LastInclusionLocation = HashLoc;
 }
 
-void InclusionRewriter::If(SourceLocation Loc, SourceRange ConditionRange,
+void InclusionRewriter::If(SourceLocation HashLoc, SourceLocation Loc,
+                           SourceRange ConditionRange,
                            ConditionValueKind ConditionValue) {
   auto P = IfConditions.insert(std::make_pair(Loc, ConditionValue == CVK_True));
   (void)P;
   assert(P.second && "Unexpected revisitation of the same if directive");
 }
 
-void InclusionRewriter::Elif(SourceLocation Loc, SourceRange ConditionRange,
+void InclusionRewriter::Elif(SourceLocation HashLoc, SourceLocation Loc,
+                             SourceRange ConditionRange,
                              ConditionValueKind ConditionValue,
                              SourceLocation IfLoc) {
   auto P = IfConditions.insert(std::make_pair(Loc, ConditionValue == CVK_True));

@@ -75,13 +75,15 @@ public:
 
   std::vector<Result> Results;
 
-  void If(SourceLocation Loc, SourceRange ConditionRange,
+  void If(SourceLocation HashLoc, SourceLocation Loc,
+          SourceRange ConditionRange,
           ConditionValueKind ConditionValue) override {
     Results.emplace_back(ConditionRange, ConditionValue);
   }
 
-  void Elif(SourceLocation Loc, SourceRange ConditionRange,
-            ConditionValueKind ConditionValue, SourceLocation IfLoc) override {
+  void Elif(SourceLocation HashLoc, SourceLocation Loc,
+            SourceRange ConditionRange, ConditionValueKind ConditionValue,
+            SourceLocation IfLoc) override {
     Results.emplace_back(ConditionRange, ConditionValue);
   }
 };
@@ -96,14 +98,15 @@ public:
 
   PragmaOpenCLExtensionCallbacks() : Name("Not called."), State(99) {}
 
-  void PragmaOpenCLExtension(clang::SourceLocation NameLoc,
+  void PragmaOpenCLExtension(clang::PragmaIntroducer Introducer,
+                             clang::SourceLocation NameLoc,
                              const clang::IdentifierInfo *Name,
                              clang::SourceLocation StateLoc,
                              unsigned State) override {
-      this->NameLoc = NameLoc;
-      this->Name = Name->getName();
-      this->StateLoc = StateLoc;
-      this->State = State;
+    this->NameLoc = NameLoc;
+    this->Name = Name->getName();
+    this->StateLoc = StateLoc;
+    this->State = State;
   }
 
   SourceLocation NameLoc;
@@ -121,7 +124,8 @@ public:
 
   std::vector<Mark> Marks;
 
-  void PragmaMark(SourceLocation Loc, StringRef Trivia) override {
+  void PragmaMark(PragmaIntroducer Introducer, SourceLocation Loc,
+                  StringRef Trivia) override {
     Marks.emplace_back(Mark{Loc, Trivia.str()});
   }
 };

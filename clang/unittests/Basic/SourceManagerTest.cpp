@@ -510,15 +510,15 @@ class MacroTracker : public PPCallbacks {
 public:
   explicit MacroTracker(std::vector<MacroAction> &Macros) : Macros(Macros) { }
 
-  void MacroDefined(const Token &MacroNameTok,
+  void MacroDefined(SourceLocation HashLoc, const Token &MacroNameTok,
                     const MacroDirective *MD) override {
     Macros.push_back(MacroAction(MD->getLocation(),
                                  MacroNameTok.getIdentifierInfo()->getName(),
                                  MacroAction::kDefinition));
   }
-  void MacroUndefined(const Token &MacroNameTok,
+  void MacroUndefined(SourceLocation HashLoc, const Token &MacroNameTok,
                       const MacroDefinition &MD,
-                      const MacroDirective  *UD) override {
+                      const MacroDirective *UD) override {
     Macros.push_back(
         MacroAction(UD ? UD->getLocation() : SourceLocation(),
                     MacroNameTok.getIdentifierInfo()->getName(),

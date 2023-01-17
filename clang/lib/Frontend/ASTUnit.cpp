@@ -909,7 +909,7 @@ class MacroDefinitionTrackerPPCallbacks : public PPCallbacks {
 public:
   explicit MacroDefinitionTrackerPPCallbacks(unsigned &Hash) : Hash(Hash) {}
 
-  void MacroDefined(const Token &MacroNameTok,
+  void MacroDefined(SourceLocation HashLoc, const Token &MacroNameTok,
                     const MacroDirective *MD) override {
     AddDefinedMacroToHash(MacroNameTok, Hash);
   }

@@ -403,7 +403,8 @@ void PreprocessingRecord::addMacroExpansion(const Token &Id,
     addPreprocessedEntity(new (*this) MacroExpansion(Def, Range));
 }
 
-void PreprocessingRecord::Ifdef(SourceLocation Loc, const Token &MacroNameTok,
+void PreprocessingRecord::Ifdef(SourceLocation HashLoc, SourceLocation Loc,
+                                const Token &MacroNameTok,
                                 const MacroDefinition &MD) {
   // This is not actually a macro expansion but record it as a macro reference.
   if (MD)
@@ -411,7 +412,8 @@ void PreprocessingRecord::Ifdef(SourceLocation Loc, const Token &MacroNameTok,
                       MacroNameTok.getLocation());
 }
 
-void PreprocessingRecord::Elifdef(SourceLocation Loc, const Token &MacroNameTok,
+void PreprocessingRecord::Elifdef(SourceLocation HashLoc, SourceLocation Loc,
+                                  const Token &MacroNameTok,
                                   const MacroDefinition &MD) {
   // This is not actually a macro expansion but record it as a macro reference.
   if (MD)
@@ -419,7 +421,8 @@ void PreprocessingRecord::Elifdef(SourceLocation Loc, const Token &MacroNameTok,
                       MacroNameTok.getLocation());
 }
 
-void PreprocessingRecord::Ifndef(SourceLocation Loc, const Token &MacroNameTok,
+void PreprocessingRecord::Ifndef(SourceLocation HashLoc, SourceLocation Loc,
+                                 const Token &MacroNameTok,
                                  const MacroDefinition &MD) {
   // This is not actually a macro expansion but record it as a macro reference.
   if (MD)
@@ -427,7 +430,7 @@ void PreprocessingRecord::Ifndef(SourceLocation Loc, const Token &MacroNameTok,
                       MacroNameTok.getLocation());
 }
 
-void PreprocessingRecord::Elifndef(SourceLocation Loc,
+void PreprocessingRecord::Elifndef(SourceLocation HashLoc, SourceLocation Loc,
                                    const Token &MacroNameTok,
                                    const MacroDefinition &MD) {
   // This is not actually a macro expansion but record it as a macro reference.
@@ -458,7 +461,7 @@ void PreprocessingRecord::MacroExpands(const Token &Id,
   addMacroExpansion(Id, MD.getMacroInfo(), Range);
 }
 
-void PreprocessingRecord::MacroDefined(const Token &Id,
+void PreprocessingRecord::MacroDefined(SourceLocation HashLoc, const Token &Id,
                                        const MacroDirective *MD) {
   const MacroInfo *MI = MD->getMacroInfo();
   SourceRange R(MI->getDefinitionLoc(), MI->getDefinitionEndLoc());
@@ -468,7 +471,8 @@ void PreprocessingRecord::MacroDefined(const Token &Id,
   MacroDefinitions[MI] = Def;
 }
 
-void PreprocessingRecord::MacroUndefined(const Token &Id,
+void PreprocessingRecord::MacroUndefined(SourceLocation HashLoc,
+                                         const Token &Id,
                                          const MacroDefinition &MD,
                                          const MacroDirective *Undef) {
   MD.forAllDefinitions([&](MacroInfo *MI) { MacroDefinitions.erase(MI); });

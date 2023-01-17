@@ -2585,7 +2585,7 @@ void PragmaOpenCLExtensionHandler::HandlePragma(Preprocessor &PP,
                       /*IsReinject=*/false);
 
   if (PP.getPPCallbacks())
-    PP.getPPCallbacks()->PragmaOpenCLExtension(NameLoc, Ext,
+    PP.getPPCallbacks()->PragmaOpenCLExtension(Introducer, NameLoc, Ext,
                                                StateLoc, State);
 }
 
@@ -3043,8 +3043,8 @@ void PragmaDetectMismatchHandler::HandlePragma(Preprocessor &PP,
 
   // If the pragma is lexically sound, notify any interested PPCallbacks.
   if (PP.getPPCallbacks())
-    PP.getPPCallbacks()->PragmaDetectMismatch(DetectMismatchLoc, NameString,
-                                              ValueString);
+    PP.getPPCallbacks()->PragmaDetectMismatch(Introducer, DetectMismatchLoc,
+                                              NameString, ValueString);
 
   Actions.ActOnPragmaDetectMismatch(DetectMismatchLoc, NameString, ValueString);
 }
@@ -3124,7 +3124,8 @@ void PragmaCommentHandler::HandlePragma(Preprocessor &PP,
 
   // If the pragma is lexically sound, notify any interested PPCallbacks.
   if (PP.getPPCallbacks())
-    PP.getPPCallbacks()->PragmaComment(CommentLoc, II, ArgumentString);
+    PP.getPPCallbacks()->PragmaComment(Introducer, CommentLoc, II,
+                                       ArgumentString);
 
   Actions.ActOnPragmaMSComment(CommentLoc, Kind, ArgumentString);
 }

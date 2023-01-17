@@ -59,7 +59,8 @@ public:
     recordMacroRef(MacroName, *MD.getMacroInfo());
   }
 
-  void MacroDefined(const Token &MacroName, const MacroDirective *MD) override {
+  void MacroDefined(SourceLocation HashLoc, const Token &MacroName,
+                    const MacroDirective *MD) override {
     if (!Active)
       return;
 
@@ -78,7 +79,8 @@ public:
     }
   }
 
-  void MacroUndefined(const Token &MacroName, const MacroDefinition &MD,
+  void MacroUndefined(SourceLocation HashLoc, const Token &MacroName,
+                      const MacroDefinition &MD,
                       const MacroDirective *) override {
     if (!Active)
       return;
@@ -86,16 +88,16 @@ public:
       recordMacroRef(MacroName, *MI);
   }
 
-  void Ifdef(SourceLocation Loc, const Token &MacroNameTok,
-             const MacroDefinition &MD) override {
+  void Ifdef(SourceLocation HashLoc, SourceLocation Loc,
+             const Token &MacroNameTok, const MacroDefinition &MD) override {
     if (!Active)
       return;
     if (const auto *MI = MD.getMacroInfo())
       recordMacroRef(MacroNameTok, *MI, RefType::Ambiguous);
   }
 
-  void Ifndef(SourceLocation Loc, const Token &MacroNameTok,
-              const MacroDefinition &MD) override {
+  void Ifndef(SourceLocation HashLoc, SourceLocation Loc,
+              const Token &MacroNameTok, const MacroDefinition &MD) override {
     if (!Active)
       return;
     if (const auto *MI = MD.getMacroInfo())
@@ -104,15 +106,15 @@ public:
 
   using PPCallbacks::Elifdef;
   using PPCallbacks::Elifndef;
-  void Elifdef(SourceLocation Loc, const Token &MacroNameTok,
-               const MacroDefinition &MD) override {
+  void Elifdef(SourceLocation HashLoc, SourceLocation Loc,
+               const Token &MacroNameTok, const MacroDefinition &MD) override {
     if (!Active)
       return;
     if (const auto *MI = MD.getMacroInfo())
       recordMacroRef(MacroNameTok, *MI, RefType::Ambiguous);
   }
-  void Elifndef(SourceLocation Loc, const Token &MacroNameTok,
-                const MacroDefinition &MD) override {
+  void Elifndef(SourceLocation HashLoc, SourceLocation Loc,
+                const Token &MacroNameTok, const MacroDefinition &MD) override {
     if (!Active)
       return;
     if (const auto *MI = MD.getMacroInfo())

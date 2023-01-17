@@ -164,7 +164,8 @@ void PPCallbacksTracker::moduleImport(SourceLocation ImportLoc,
 void PPCallbacksTracker::EndOfMainFile() { beginCallback("EndOfMainFile"); }
 
 // Callback invoked when a #ident or #sccs directive is read.
-void PPCallbacksTracker::Ident(SourceLocation Loc, llvm::StringRef Str) {
+void PPCallbacksTracker::Ident(SourceLocation HashLoc, SourceLocation Loc,
+                               llvm::StringRef Str) {
   beginCallback("Ident");
   appendArgument("Loc", Loc);
   appendArgument("Str", Str);
@@ -177,7 +178,8 @@ void PPCallbacksTracker::PragmaDirective(PragmaIntroducer Introducer) {
 }
 
 // Callback invoked when a #pragma comment directive is read.
-void PPCallbacksTracker::PragmaComment(SourceLocation Loc,
+void PPCallbacksTracker::PragmaComment(PragmaIntroducer Introducer,
+                                       SourceLocation Loc,
                                        const IdentifierInfo *Kind,
                                        llvm::StringRef Str) {
   beginCallback("PragmaComment");
@@ -188,7 +190,8 @@ void PPCallbacksTracker::PragmaComment(SourceLocation Loc,
 
 // Callback invoked when a #pragma detect_mismatch directive is
 // read.
-void PPCallbacksTracker::PragmaDetectMismatch(SourceLocation Loc,
+void PPCallbacksTracker::PragmaDetectMismatch(PragmaIntroducer Introducer,
+                                              SourceLocation Loc,
                                               llvm::StringRef Name,
                                               llvm::StringRef Value) {
   beginCallback("PragmaDetectMismatch");
@@ -198,7 +201,8 @@ void PPCallbacksTracker::PragmaDetectMismatch(SourceLocation Loc,
 }
 
 // Callback invoked when a #pragma clang __debug directive is read.
-void PPCallbacksTracker::PragmaDebug(SourceLocation Loc,
+void PPCallbacksTracker::PragmaDebug(PragmaIntroducer Introducer,
+                                     SourceLocation Loc,
                                      llvm::StringRef DebugType) {
   beginCallback("PragmaDebug");
   appendArgument("Loc", Loc);
@@ -206,7 +210,8 @@ void PPCallbacksTracker::PragmaDebug(SourceLocation Loc,
 }
 
 // Callback invoked when a #pragma message directive is read.
-void PPCallbacksTracker::PragmaMessage(SourceLocation Loc,
+void PPCallbacksTracker::PragmaMessage(PragmaIntroducer Introducer,
+                                       SourceLocation Loc,
                                        llvm::StringRef Namespace,
                                        PPCallbacks::PragmaMessageKind Kind,
                                        llvm::StringRef Str) {
@@ -219,7 +224,8 @@ void PPCallbacksTracker::PragmaMessage(SourceLocation Loc,
 
 // Callback invoked when a #pragma gcc diagnostic push directive
 // is read.
-void PPCallbacksTracker::PragmaDiagnosticPush(SourceLocation Loc,
+void PPCallbacksTracker::PragmaDiagnosticPush(PragmaIntroducer Introducer,
+                                              SourceLocation Loc,
                                               llvm::StringRef Namespace) {
   beginCallback("PragmaDiagnosticPush");
   appendArgument("Loc", Loc);
@@ -228,7 +234,8 @@ void PPCallbacksTracker::PragmaDiagnosticPush(SourceLocation Loc,
 
 // Callback invoked when a #pragma gcc diagnostic pop directive
 // is read.
-void PPCallbacksTracker::PragmaDiagnosticPop(SourceLocation Loc,
+void PPCallbacksTracker::PragmaDiagnosticPop(PragmaIntroducer Introducer,
+                                             SourceLocation Loc,
                                              llvm::StringRef Namespace) {
   beginCallback("PragmaDiagnosticPop");
   appendArgument("Loc", Loc);
@@ -236,7 +243,8 @@ void PPCallbacksTracker::PragmaDiagnosticPop(SourceLocation Loc,
 }
 
 // Callback invoked when a #pragma gcc diagnostic directive is read.
-void PPCallbacksTracker::PragmaDiagnostic(SourceLocation Loc,
+void PPCallbacksTracker::PragmaDiagnostic(PragmaIntroducer Introducer,
+                                          SourceLocation Loc,
                                           llvm::StringRef Namespace,
                                           diag::Severity Mapping,
                                           llvm::StringRef Str) {
@@ -249,7 +257,8 @@ void PPCallbacksTracker::PragmaDiagnostic(SourceLocation Loc,
 
 // Called when an OpenCL extension is either disabled or
 // enabled with a pragma.
-void PPCallbacksTracker::PragmaOpenCLExtension(SourceLocation NameLoc,
+void PPCallbacksTracker::PragmaOpenCLExtension(PragmaIntroducer Introducer,
+                                               SourceLocation NameLoc,
                                                const IdentifierInfo *Name,
                                                SourceLocation StateLoc,
                                                unsigned State) {
@@ -261,7 +270,8 @@ void PPCallbacksTracker::PragmaOpenCLExtension(SourceLocation NameLoc,
 }
 
 // Callback invoked when a #pragma warning directive is read.
-void PPCallbacksTracker::PragmaWarning(SourceLocation Loc,
+void PPCallbacksTracker::PragmaWarning(PragmaIntroducer Introducer,
+                                       SourceLocation Loc,
                                        PragmaWarningSpecifier WarningSpec,
                                        llvm::ArrayRef<int> Ids) {
   beginCallback("PragmaWarning");
@@ -281,21 +291,24 @@ void PPCallbacksTracker::PragmaWarning(SourceLocation Loc,
 }
 
 // Callback invoked when a #pragma warning(push) directive is read.
-void PPCallbacksTracker::PragmaWarningPush(SourceLocation Loc, int Level) {
+void PPCallbacksTracker::PragmaWarningPush(PragmaIntroducer Introducer,
+                                           SourceLocation Loc, int Level) {
   beginCallback("PragmaWarningPush");
   appendArgument("Loc", Loc);
   appendArgument("Level", Level);
 }
 
 // Callback invoked when a #pragma warning(pop) directive is read.
-void PPCallbacksTracker::PragmaWarningPop(SourceLocation Loc) {
+void PPCallbacksTracker::PragmaWarningPop(PragmaIntroducer Introducer,
+                                          SourceLocation Loc) {
   beginCallback("PragmaWarningPop");
   appendArgument("Loc", Loc);
 }
 
 // Callback invoked when a #pragma execution_character_set(push) directive
 // is read.
-void PPCallbacksTracker::PragmaExecCharsetPush(SourceLocation Loc,
+void PPCallbacksTracker::PragmaExecCharsetPush(PragmaIntroducer Introducer,
+                                               SourceLocation Loc,
                                                StringRef Str) {
   beginCallback("PragmaExecCharsetPush");
   appendArgument("Loc", Loc);
@@ -304,7 +317,8 @@ void PPCallbacksTracker::PragmaExecCharsetPush(SourceLocation Loc,
 
 // Callback invoked when a #pragma execution_character_set(pop) directive
 // is read.
-void PPCallbacksTracker::PragmaExecCharsetPop(SourceLocation Loc) {
+void PPCallbacksTracker::PragmaExecCharsetPop(PragmaIntroducer Introducer,
+                                              SourceLocation Loc) {
   beginCallback("PragmaExecCharsetPop");
   appendArgument("Loc", Loc);
 }
@@ -323,7 +337,8 @@ void PPCallbacksTracker::MacroExpands(const Token &MacroNameTok,
 }
 
 // Hook called whenever a macro definition is seen.
-void PPCallbacksTracker::MacroDefined(const Token &MacroNameTok,
+void PPCallbacksTracker::MacroDefined(SourceLocation HashLoc,
+                                      const Token &MacroNameTok,
                                       const MacroDirective *MacroDirective) {
   beginCallback("MacroDefined");
   appendArgument("MacroNameTok", MacroNameTok);
@@ -331,7 +346,8 @@ void PPCallbacksTracker::MacroDefined(const Token &MacroNameTok,
 }
 
 // Hook called whenever a macro #undef is seen.
-void PPCallbacksTracker::MacroUndefined(const Token &MacroNameTok,
+void PPCallbacksTracker::MacroUndefined(SourceLocation HashLoc,
+                                        const Token &MacroNameTok,
                                         const MacroDefinition &MacroDefinition,
                                         const MacroDirective *Undef) {
   beginCallback("MacroUndefined");
@@ -357,7 +373,8 @@ void PPCallbacksTracker::SourceRangeSkipped(SourceRange Range,
 }
 
 // Hook called whenever an #if is seen.
-void PPCallbacksTracker::If(SourceLocation Loc, SourceRange ConditionRange,
+void PPCallbacksTracker::If(SourceLocation HashLoc, SourceLocation Loc,
+                            SourceRange ConditionRange,
                             ConditionValueKind ConditionValue) {
   beginCallback("If");
   appendArgument("Loc", Loc);
@@ -366,7 +383,8 @@ void PPCallbacksTracker::If(SourceLocation Loc, SourceRange ConditionRange,
 }
 
 // Hook called whenever an #elif is seen.
-void PPCallbacksTracker::Elif(SourceLocation Loc, SourceRange ConditionRange,
+void PPCallbacksTracker::Elif(SourceLocation HashLoc, SourceLocation Loc,
+                              SourceRange ConditionRange,
                               ConditionValueKind ConditionValue,
                               SourceLocation IfLoc) {
   beginCallback("Elif");
@@ -377,7 +395,8 @@ void PPCallbacksTracker::Elif(SourceLocation Loc, SourceRange ConditionRange,
 }
 
 // Hook called whenever an #ifdef is seen.
-void PPCallbacksTracker::Ifdef(SourceLocation Loc, const Token &MacroNameTok,
+void PPCallbacksTracker::Ifdef(SourceLocation HashLoc, SourceLocation Loc,
+                               const Token &MacroNameTok,
                                const MacroDefinition &MacroDefinition) {
   beginCallback("Ifdef");
   appendArgument("Loc", Loc);
@@ -386,7 +405,8 @@ void PPCallbacksTracker::Ifdef(SourceLocation Loc, const Token &MacroNameTok,
 }
 
 // Hook called whenever an #ifndef is seen.
-void PPCallbacksTracker::Ifndef(SourceLocation Loc, const Token &MacroNameTok,
+void PPCallbacksTracker::Ifndef(SourceLocation HashLoc, SourceLocation Loc,
+                                const Token &MacroNameTok,
                                 const MacroDefinition &MacroDefinition) {
   beginCallback("Ifndef");
   appendArgument("Loc", Loc);
@@ -395,14 +415,16 @@ void PPCallbacksTracker::Ifndef(SourceLocation Loc, const Token &MacroNameTok,
 }
 
 // Hook called whenever an #else is seen.
-void PPCallbacksTracker::Else(SourceLocation Loc, SourceLocation IfLoc) {
+void PPCallbacksTracker::Else(SourceLocation HashLoc, SourceLocation Loc,
+                              SourceLocation IfLoc) {
   beginCallback("Else");
   appendArgument("Loc", Loc);
   appendArgument("IfLoc", IfLoc);
 }
 
 // Hook called whenever an #endif is seen.
-void PPCallbacksTracker::Endif(SourceLocation Loc, SourceLocation IfLoc) {
+void PPCallbacksTracker::Endif(SourceLocation HashLoc, SourceLocation Loc,
+                               SourceLocation IfLoc) {
   beginCallback("Endif");
   appendArgument("Loc", Loc);
   appendArgument("IfLoc", IfLoc);

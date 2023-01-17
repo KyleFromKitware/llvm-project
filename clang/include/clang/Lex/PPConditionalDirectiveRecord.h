@@ -85,24 +85,28 @@ public:
   SourceLocation findConditionalDirectiveRegionLoc(SourceLocation Loc) const;
 
 private:
-  void If(SourceLocation Loc, SourceRange ConditionRange,
+  void If(SourceLocation HashLoc, SourceLocation Loc,
+          SourceRange ConditionRange,
           ConditionValueKind ConditionValue) override;
-  void Elif(SourceLocation Loc, SourceRange ConditionRange,
-            ConditionValueKind ConditionValue, SourceLocation IfLoc) override;
-  void Ifdef(SourceLocation Loc, const Token &MacroNameTok,
-             const MacroDefinition &MD) override;
-  void Ifndef(SourceLocation Loc, const Token &MacroNameTok,
-              const MacroDefinition &MD) override;
-  void Elifdef(SourceLocation Loc, const Token &MacroNameTok,
-               const MacroDefinition &MD) override;
-  void Elifdef(SourceLocation Loc, SourceRange ConditionRange,
-               SourceLocation IfLoc) override;
-  void Elifndef(SourceLocation Loc, const Token &MacroNameTok,
-                const MacroDefinition &MD) override;
-  void Elifndef(SourceLocation Loc, SourceRange ConditionRange,
-                SourceLocation IfLoc) override;
-  void Else(SourceLocation Loc, SourceLocation IfLoc) override;
-  void Endif(SourceLocation Loc, SourceLocation IfLoc) override;
+  void Elif(SourceLocation HashLoc, SourceLocation Loc,
+            SourceRange ConditionRange, ConditionValueKind ConditionValue,
+            SourceLocation IfLoc) override;
+  void Ifdef(SourceLocation HashLoc, SourceLocation Loc,
+             const Token &MacroNameTok, const MacroDefinition &MD) override;
+  void Ifndef(SourceLocation HashLoc, SourceLocation Loc,
+              const Token &MacroNameTok, const MacroDefinition &MD) override;
+  void Elifdef(SourceLocation HashLoc, SourceLocation Loc,
+               const Token &MacroNameTok, const MacroDefinition &MD) override;
+  void Elifdef(SourceLocation HashLoc, SourceLocation Loc,
+               SourceRange ConditionRange, SourceLocation IfLoc) override;
+  void Elifndef(SourceLocation HashLoc, SourceLocation Loc,
+                const Token &MacroNameTok, const MacroDefinition &MD) override;
+  void Elifndef(SourceLocation HashLoc, SourceLocation Loc,
+                SourceRange ConditionRange, SourceLocation IfLoc) override;
+  void Else(SourceLocation HashLoc, SourceLocation Loc,
+            SourceLocation IfLoc) override;
+  void Endif(SourceLocation HashLoc, SourceLocation Loc,
+             SourceLocation IfLoc) override;
 };
 
 } // end namespace clang

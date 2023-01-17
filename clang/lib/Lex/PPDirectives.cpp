@@ -596,6 +596,7 @@ void Preprocessor::SkipExcludedConditionalBlock(SourceLocation HashTokenLoc,
     assert(Tok.is(tok::hash));
     const char *Hashptr = CurLexer->getBufferLocation() - Tok.getLength();
     assert(CurLexer->getSourceLocation(Hashptr) == Tok.getLocation());
+    SourceLocation LastHashLoc = Tok.getLocation();
 
     // Read the next token, the directive flavor.
     LexUnexpandedToken(Tok);
@@ -677,7 +678,7 @@ void Preprocessor::SkipExcludedConditionalBlock(SourceLocation HashTokenLoc,
           endLoc = CheckEndOfDirective("endif");
           CurPPLexer->LexingRawMode = true;
           if (Callbacks)
-            Callbacks->Endif(Tok.getLocation(), CondInfo.IfLoc);
+            Callbacks->Endif(LastHashLoc, Tok.getLocation(), CondInfo.IfLoc);
           break;
         } else {
           DiscardUntilEndOfDirective();
@@ -708,7 +709,7 @@ void Preprocessor::SkipExcludedConditionalBlock(SourceLocation HashTokenLoc,
           endLoc = CheckEndOfDirective("else");
           CurPPLexer->LexingRawMode = true;
           if (Callbacks)
-            Callbacks->Else(Tok.getLocation(), CondInfo.IfLoc);
+            Callbacks->Else(LastHashLoc, Tok.getLocation(), CondInfo.IfLoc);
           break;
         } else {
           DiscardUntilEndOfDirective();  // C99 6.10p4.
@@ -745,7 +746,7 @@ void Preprocessor::SkipExcludedConditionalBlock(SourceLocation HashTokenLoc,
           CurPPLexer->LexingRawMode = true;
           if (Callbacks) {
             Callbacks->Elif(
-                Tok.getLocation(), DER.ExprRange,
+                LastHashLoc, Tok.getLocation(), DER.ExprRange,
                 (CondValue ? PPCallbacks::CVK_True : PPCallbacks::CVK_False),
                 CondInfo.IfLoc);
           }
@@ -815,11 +816,11 @@ void Preprocessor::SkipExcludedConditionalBlock(SourceLocation HashTokenLoc,
 
           if (Callbacks) {
             if (IsElifDef) {
-              Callbacks->Elifdef(DirectiveToken.getLocation(), MacroNameTok,
-                                 MD);
+              Callbacks->Elifdef(LastHashLoc, DirectiveToken.getLocation(),
+                                 MacroNameTok, MD);
             } else {
-              Callbacks->Elifndef(DirectiveToken.getLocation(), MacroNameTok,
-                                  MD);
+              Callbacks->Elifndef(LastHashLoc, DirectiveToken.getLocation(),
+                                  MacroNameTok, MD);
             }
           }
           // If this condition is true, enter it!
@@ -1112,7 +1113,7 @@ void Preprocessor::HandleSkippedDirectiveWhileUsingPCH(Token &Result,
                                                        SourceLocation HashLoc) {
   if (const IdentifierInfo *II = Result.getIdentifierInfo()) {
     if (II->getPPKeywordID() == tok::pp_define) {
-      return HandleDefineDirective(Result,
+      return HandleDefineDirective(HashLoc, Result,
                                    /*ImmediatelyAfterHeaderGuard=*/false);
     }
     if (SkippingUntilPCHThroughHeader &&
@@ -1232,7 +1233,7 @@ void Preprocessor::HandleDirective(Token &Result) {
     case tok::pp_else:
       return HandleElseDirective(Result, SavedHash);
     case tok::pp_endif:
-      return HandleEndifDirective(Result);
+      return HandleEndifDirective(Result, SavedHash);
 
     // C99 6.10.2 - Source File Inclusion.
     case tok::pp_include:
@@ -1244,9 +1245,10 @@ void Preprocessor::HandleDirective(Token &Result) {
 
     // C99 6.10.3 - Macro Replacement.
     case tok::pp_define:
-      return HandleDefineDirective(Result, ImmediatelyAfterTopLevelIfndef);
+      return HandleDefineDirective(SavedHash.getLocation(), Result,
+                                   ImmediatelyAfterTopLevelIfndef);
     case tok::pp_undef:
-      return HandleUndefDirective();
+      return HandleUndefDirective(SavedHash.getLocation());
 
     // C99 6.10.4 - Line Control.
     case tok::pp_line:
@@ -1279,9 +1281,9 @@ void Preprocessor::HandleDirective(Token &Result) {
 
       return HandleUserDiagnosticDirective(Result, true);
     case tok::pp_ident:
-      return HandleIdentSCCSDirective(Result);
+      return HandleIdentSCCSDirective(SavedHash.getLocation(), Result);
     case tok::pp_sccs:
-      return HandleIdentSCCSDirective(Result);
+      return HandleIdentSCCSDirective(SavedHash.getLocation(), Result);
     case tok::pp_assert:
       //isExtension = true;  // FIXME: implement #assert
       break;
@@ -1655,7 +1657,8 @@ void Preprocessor::HandleUserDiagnosticDirective(Token &Tok,
 
 /// HandleIdentSCCSDirective - Handle a #ident/#sccs directive.
 ///
-void Preprocessor::HandleIdentSCCSDirective(Token &Tok) {
+void Preprocessor::HandleIdentSCCSDirective(SourceLocation HashLoc,
+                                            Token &Tok) {
   // Yes, this directive is an extension.
   Diag(Tok, diag::ext_pp_ident_directive);
 
@@ -1685,7 +1688,7 @@ void Preprocessor::HandleIdentSCCSDirective(Token &Tok) {
     bool Invalid = false;
     std::string Str = getSpelling(StrTok, &Invalid);
     if (!Invalid)
-      Callbacks->Ident(Tok.getLocation(), Str);
+      Callbacks->Ident(HashLoc, Tok.getLocation(), Str);
   }
 }
 
@@ -3026,7 +3029,8 @@ MacroInfo *Preprocessor::ReadOptionalMacroParameterListAndBody(
 /// HandleDefineDirective - Implements \#define.  This consumes the entire macro
 /// line then lets the caller lex the next real token.
 void Preprocessor::HandleDefineDirective(
-    Token &DefineTok, const bool ImmediatelyAfterHeaderGuard) {
+    SourceLocation HashLoc, Token &DefineTok,
+    const bool ImmediatelyAfterHeaderGuard) {
   ++NumDefined;
 
   Token MacroNameTok;
@@ -3158,7 +3162,7 @@ void Preprocessor::HandleDefineDirective(
 
   // If the callbacks want to know, tell them about the macro definition.
   if (Callbacks)
-    Callbacks->MacroDefined(MacroNameTok, MD);
+    Callbacks->MacroDefined(HashLoc, MacroNameTok, MD);
 
   // If we're in MS compatibility mode and the macro being defined is the
   // assert macro, implicitly add a macro definition for static_assert to work
@@ -3180,7 +3184,7 @@ void Preprocessor::HandleDefineDirective(
 
 /// HandleUndefDirective - Implements \#undef.
 ///
-void Preprocessor::HandleUndefDirective() {
+void Preprocessor::HandleUndefDirective(SourceLocation HashLoc) {
   ++NumUndefined;
 
   Token MacroNameTok;
@@ -3215,7 +3219,7 @@ void Preprocessor::HandleUndefDirective() {
   // If the callbacks want to know, tell them about the macro #undef.
   // Note: no matter if the macro was defined or not.
   if (Callbacks)
-    Callbacks->MacroUndefined(MacroNameTok, MD, Undef);
+    Callbacks->MacroUndefined(HashLoc, MacroNameTok, MD, Undef);
 
   if (Undef)
     appendMacroDirective(II, Undef);
@@ -3277,9 +3281,11 @@ void Preprocessor::HandleIfdefDirective(Token &Result,
 
   if (Callbacks) {
     if (isIfndef)
-      Callbacks->Ifndef(DirectiveTok.getLocation(), MacroNameTok, MD);
+      Callbacks->Ifndef(HashToken.getLocation(), DirectiveTok.getLocation(),
+                        MacroNameTok, MD);
     else
-      Callbacks->Ifdef(DirectiveTok.getLocation(), MacroNameTok, MD);
+      Callbacks->Ifdef(HashToken.getLocation(), DirectiveTok.getLocation(),
+                       MacroNameTok, MD);
   }
 
   bool RetainExcludedCB = PPOpts->RetainExcludedConditionalBlocks &&
@@ -3334,7 +3340,7 @@ void Preprocessor::HandleIfDirective(Token &IfToken,
 
   if (Callbacks)
     Callbacks->If(
-        IfToken.getLocation(), DER.ExprRange,
+        HashToken.getLocation(), IfToken.getLocation(), DER.ExprRange,
         (ConditionalTrue ? PPCallbacks::CVK_True : PPCallbacks::CVK_False));
 
   bool RetainExcludedCB = PPOpts->RetainExcludedConditionalBlocks &&
@@ -3360,7 +3366,8 @@ void Preprocessor::HandleIfDirective(Token &IfToken,
 
 /// HandleEndifDirective - Implements the \#endif directive.
 ///
-void Preprocessor::HandleEndifDirective(Token &EndifToken) {
+void Preprocessor::HandleEndifDirective(Token &EndifToken,
+                                        const Token &HashToken) {
   ++NumEndif;
 
   // Check that this is the whole directive.
@@ -3381,7 +3388,8 @@ void Preprocessor::HandleEndifDirective(Token &EndifToken) {
          "This code should only be reachable in the non-skipping case!");
 
   if (Callbacks)
-    Callbacks->Endif(EndifToken.getLocation(), CondInfo.IfLoc);
+    Callbacks->Endif(HashToken.getLocation(), EndifToken.getLocation(),
+                     CondInfo.IfLoc);
 }
 
 /// HandleElseDirective - Implements the \#else directive.
@@ -3406,7 +3414,7 @@ void Preprocessor::HandleElseDirective(Token &Result, const Token &HashToken) {
   if (CI.FoundElse) Diag(Result, diag::pp_err_else_after_else);
 
   if (Callbacks)
-    Callbacks->Else(Result.getLocation(), CI.IfLoc);
+    Callbacks->Else(HashToken.getLocation(), Result.getLocation(), CI.IfLoc);
 
   bool RetainExcludedCB = PPOpts->RetainExcludedConditionalBlocks &&
     getSourceManager().isInMainFile(Result.getLocation());
@@ -3473,14 +3481,16 @@ void Preprocessor::HandleElifFamilyDirective(Token &ElifToken,
   if (Callbacks) {
     switch (Kind) {
     case tok::pp_elif:
-      Callbacks->Elif(ElifToken.getLocation(), ConditionRange,
-                      PPCallbacks::CVK_NotEvaluated, CI.IfLoc);
+      Callbacks->Elif(HashToken.getLocation(), ElifToken.getLocation(),
+                      ConditionRange, PPCallbacks::CVK_NotEvaluated, CI.IfLoc);
       break;
     case tok::pp_elifdef:
-      Callbacks->Elifdef(ElifToken.getLocation(), ConditionRange, CI.IfLoc);
+      Callbacks->Elifdef(HashToken.getLocation(), ElifToken.getLocation(),
+                         ConditionRange, CI.IfLoc);
       break;
     case tok::pp_elifndef:
-      Callbacks->Elifndef(ElifToken.getLocation(), ConditionRange, CI.IfLoc);
+      Callbacks->Elifndef(HashToken.getLocation(), ElifToken.getLocation(),
+                          ConditionRange, CI.IfLoc);
       break;
     default:
       assert(false && "unexpected directive kind");

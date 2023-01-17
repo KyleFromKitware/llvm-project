@@ -2486,7 +2486,7 @@ private:
   void HandleLineDirective();
   void HandleDigitDirective(Token &Tok);
   void HandleUserDiagnosticDirective(Token &Tok, bool isWarning);
-  void HandleIdentSCCSDirective(Token &Tok);
+  void HandleIdentSCCSDirective(SourceLocation HashLoc, Token &Tok);
   void HandleMacroPublicDirective(Token &Tok);
   void HandleMacroPrivateDirective();
 
@@ -2597,15 +2597,16 @@ private:
   void replayPreambleConditionalStack();
 
   // Macro handling.
-  void HandleDefineDirective(Token &Tok, bool ImmediatelyAfterHeaderGuard);
-  void HandleUndefDirective();
+  void HandleDefineDirective(SourceLocation HashLoc, Token &Tok,
+                             bool ImmediatelyAfterHeaderGuard);
+  void HandleUndefDirective(SourceLocation HashLoc);
 
   // Conditional Inclusion.
   void HandleIfdefDirective(Token &Result, const Token &HashToken,
                             bool isIfndef, bool ReadAnyTokensBeforeDirective);
   void HandleIfDirective(Token &IfToken, const Token &HashToken,
                          bool ReadAnyTokensBeforeDirective);
-  void HandleEndifDirective(Token &EndifToken);
+  void HandleEndifDirective(Token &EndifToken, const Token &HashToken);
   void HandleElseDirective(Token &Result, const Token &HashToken);
   void HandleElifFamilyDirective(Token &ElifToken, const Token &HashToken,
                                  tok::PPKeywordKind Kind);
@@ -2615,7 +2616,7 @@ private:
 
 public:
   void HandlePragmaOnce(Token &OnceTok);
-  void HandlePragmaMark(Token &MarkTok);
+  void HandlePragmaMark(PragmaIntroducer Introducer, Token &MarkTok);
   void HandlePragmaPoison();
   void HandlePragmaSystemHeader(Token &SysHeaderTok);
   void HandlePragmaDependency(Token &DependencyTok);

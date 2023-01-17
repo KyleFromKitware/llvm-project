@@ -32,7 +32,8 @@ FindAllMacros::CreateMacroSymbol(const Token &MacroNameTok,
                     SymbolInfo::SymbolKind::Macro, FilePath, {});
 }
 
-void FindAllMacros::MacroDefined(const Token &MacroNameTok,
+void FindAllMacros::MacroDefined(SourceLocation HashLoc,
+                                 const Token &MacroNameTok,
                                  const MacroDirective *MD) {
   if (auto Symbol = CreateMacroSymbol(MacroNameTok, MD->getMacroInfo()))
     ++FileSymbols[*Symbol].Seen;
@@ -51,12 +52,14 @@ void FindAllMacros::MacroExpands(const Token &MacroNameTok,
   MacroUsed(MacroNameTok, MD);
 }
 
-void FindAllMacros::Ifdef(SourceLocation Loc, const Token &MacroNameTok,
+void FindAllMacros::Ifdef(SourceLocation HashLoc, SourceLocation Loc,
+                          const Token &MacroNameTok,
                           const MacroDefinition &MD) {
   MacroUsed(MacroNameTok, MD);
 }
 
-void FindAllMacros::Ifndef(SourceLocation Loc, const Token &MacroNameTok,
+void FindAllMacros::Ifndef(SourceLocation HashLoc, SourceLocation Loc,
+                           const Token &MacroNameTok,
                            const MacroDefinition &MD) {
   MacroUsed(MacroNameTok, MD);
 }
