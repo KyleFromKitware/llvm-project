@@ -418,13 +418,14 @@ void Preprocessor::HandlePragmaOnce(Token &OnceTok) {
   HeaderInfo.MarkFileIncludeOnce(getCurrentFileLexer()->getFileEntry());
 }
 
-void Preprocessor::HandlePragmaMark(Token &MarkTok) {
+void Preprocessor::HandlePragmaMark(PragmaIntroducer Introducer,
+                                    Token &MarkTok) {
   assert(CurPPLexer && "No current lexer?");
 
   SmallString<64> Buffer;
   CurLexer->ReadToEndOfLine(&Buffer);
   if (Callbacks)
-    Callbacks->PragmaMark(MarkTok.getLocation(), Buffer);
+    Callbacks->PragmaMark(Introducer, MarkTok.getLocation(), Buffer);
 }
 
 /// HandlePragmaPoison - Handle \#pragma GCC poison.  PoisonTok is the 'poison'.
@@ -1001,7 +1002,7 @@ struct PragmaMarkHandler : public PragmaHandler {
 
   void HandlePragma(Preprocessor &PP, PragmaIntroducer Introducer,
                     Token &MarkTok) override {
-    PP.HandlePragmaMark(MarkTok);
+    PP.HandlePragmaMark(Introducer, MarkTok);
   }
 };
 
@@ -1206,7 +1207,7 @@ struct PragmaDebugHandler : public PragmaHandler {
 
     PPCallbacks *Callbacks = PP.getPPCallbacks();
     if (Callbacks)
-      Callbacks->PragmaDebug(Tok.getLocation(), II->getName());
+      Callbacks->PragmaDebug(Introducer, Tok.getLocation(), II->getName());
   }
 
   void HandleCaptured(Preprocessor &PP) {
@@ -1268,12 +1269,12 @@ public:
       if (!PP.getDiagnostics().popMappings(DiagLoc))
         PP.Diag(Tok, diag::warn_pragma_diagnostic_cannot_pop);
       else if (Callbacks)
-        Callbacks->PragmaDiagnosticPop(DiagLoc, Namespace);
+        Callbacks->PragmaDiagnosticPop(Introducer, DiagLoc, Namespace);
       return;
     } else if (II->isStr("push")) {
       PP.getDiagnostics().pushMappings(DiagLoc);
       if (Callbacks)
-        Callbacks->PragmaDiagnosticPush(DiagLoc, Namespace);
+        Callbacks->PragmaDiagnosticPush(Introducer, DiagLoc, Namespace);
       return;
     }
 
@@ -1324,7 +1325,8 @@ public:
       PP.Diag(StringLoc, diag::warn_pragma_diagnostic_unknown_warning)
         << WarningName;
     else if (Callbacks)
-      Callbacks->PragmaDiagnostic(DiagLoc, Namespace, SV, WarningName);
+      Callbacks->PragmaDiagnostic(Introducer, DiagLoc, Namespace, SV,
+                                  WarningName);
   }
 };
 
@@ -1378,14 +1380,14 @@ struct PragmaWarningHandler : public PragmaHandler {
       }
       PP.getDiagnostics().pushMappings(DiagLoc);
       if (Callbacks)
-        Callbacks->PragmaWarningPush(DiagLoc, Level);
+        Callbacks->PragmaWarningPush(Introducer, DiagLoc, Level);
     } else if (II && II->isStr("pop")) {
       // #pragma warning( pop )
       PP.Lex(Tok);
       if (!PP.getDiagnostics().popMappings(DiagLoc))
         PP.Diag(Tok, diag::warn_pragma_diagnostic_cannot_pop);
       else if (Callbacks)
-        Callbacks->PragmaWarningPop(DiagLoc);
+        Callbacks->PragmaWarningPop(Introducer, DiagLoc);
     } else {
       // #pragma warning( warning-specifier : warning-number-list
       //                  [; warning-specifier : warning-number-list...] )
@@ -1465,7 +1467,7 @@ struct PragmaWarningHandler : public PragmaHandler {
           }
 
         if (Callbacks)
-          Callbacks->PragmaWarning(DiagLoc, Specifier, Ids);
+          Callbacks->PragmaWarning(Introducer, DiagLoc, Specifier, Ids);
 
         // Parse the next specifier if there is a semicolon.
         if (Tok.isNot(tok::semi))
@@ -1527,12 +1529,12 @@ struct PragmaExecCharsetHandler : public PragmaHandler {
         }
       }
       if (Callbacks)
-        Callbacks->PragmaExecCharsetPush(DiagLoc, "UTF-8");
+        Callbacks->PragmaExecCharsetPush(Introducer, DiagLoc, "UTF-8");
     } else if (II && II->isStr("pop")) {
       // #pragma execution_character_set( pop )
       PP.Lex(Tok);
       if (Callbacks)
-        Callbacks->PragmaExecCharsetPop(DiagLoc);
+        Callbacks->PragmaExecCharsetPop(Introducer, DiagLoc);
     } else {
       PP.Diag(Tok, diag::warn_pragma_exec_charset_spec_invalid);
       return;
@@ -1641,7 +1643,8 @@ public:
 
     // If the pragma is lexically sound, notify any interested PPCallbacks.
     if (PPCallbacks *Callbacks = PP.getPPCallbacks())
-      Callbacks->PragmaMessage(MessageLoc, Namespace, Kind, MessageString);
+      Callbacks->PragmaMessage(Introducer, MessageLoc, Namespace, Kind,
+                               MessageString);
   }
 };
 
@@ -1919,7 +1922,7 @@ struct PragmaAssumeNonNullHandler : public PragmaHandler {
       }
       NewLoc = Loc;
       if (Callbacks)
-        Callbacks->PragmaAssumeNonNullBegin(NewLoc);
+        Callbacks->PragmaAssumeNonNullBegin(Introducer, NewLoc);
     } else {
       // Complain about attempts to leave an audit that doesn't exist.
       if (!BeginLoc.isValid()) {
@@ -1928,7 +1931,7 @@ struct PragmaAssumeNonNullHandler : public PragmaHandler {
       }
       NewLoc = SourceLocation();
       if (Callbacks)
-        Callbacks->PragmaAssumeNonNullEnd(NewLoc);
+        Callbacks->PragmaAssumeNonNullEnd(Introducer, NewLoc);
     }
 
     PP.setPragmaAssumeNonNullLoc(NewLoc);

@@ -124,11 +124,12 @@ public:
   }
 
   // Keep track of macro definitions that look like enums.
-  void MacroDefined(const Token &MacroNameTok,
+  void MacroDefined(SourceLocation HashLoc, const Token &MacroNameTok,
                     const MacroDirective *MD) override;
 
   // Undefining an enum-like macro results in the enum set being dropped.
-  void MacroUndefined(const Token &MacroNameTok, const MacroDefinition &MD,
+  void MacroUndefined(SourceLocation HashLoc, const Token &MacroNameTok,
+                      const MacroDefinition &MD,
                       const MacroDirective *Undef) override;
 
   // Conditional compilation clears any adjacent enum-like macros.
@@ -138,42 +139,45 @@ public:
   //   #if !defined(GUARD)
   // or
   //   #ifndef GUARD
-  void If(SourceLocation Loc, SourceRange ConditionRange,
+  void If(SourceLocation HashLoc, SourceLocation Loc,
+          SourceRange ConditionRange,
           ConditionValueKind ConditionValue) override {
     conditionStart(Loc);
     checkCondition(ConditionRange);
   }
-  void Ifndef(SourceLocation Loc, const Token &MacroNameTok,
-              const MacroDefinition &MD) override {
+  void Ifndef(SourceLocation HashLoc, SourceLocation Loc,
+              const Token &MacroNameTok, const MacroDefinition &MD) override {
     conditionStart(Loc);
     checkName(MacroNameTok);
   }
-  void Ifdef(SourceLocation Loc, const Token &MacroNameTok,
-             const MacroDefinition &MD) override {
+  void Ifdef(SourceLocation HashLoc, SourceLocation Loc,
+             const Token &MacroNameTok, const MacroDefinition &MD) override {
     conditionStart(Loc);
     checkName(MacroNameTok);
   }
-  void Elif(SourceLocation Loc, SourceRange ConditionRange,
-            ConditionValueKind ConditionValue, SourceLocation IfLoc) override {
+  void Elif(SourceLocation HashLoc, SourceLocation Loc,
+            SourceRange ConditionRange, ConditionValueKind ConditionValue,
+            SourceLocation IfLoc) override {
     checkCondition(ConditionRange);
   }
-  void Elifdef(SourceLocation Loc, const Token &MacroNameTok,
-               const MacroDefinition &MD) override {
+  void Elifdef(SourceLocation HashLoc, SourceLocation Loc,
+               const Token &MacroNameTok, const MacroDefinition &MD) override {
     checkName(MacroNameTok);
   }
-  void Elifdef(SourceLocation Loc, SourceRange ConditionRange,
-      SourceLocation IfLoc) override {
-    PPCallbacks::Elifdef(Loc, ConditionRange, IfLoc);
+  void Elifdef(SourceLocation HashLoc, SourceLocation Loc,
+               SourceRange ConditionRange, SourceLocation IfLoc) override {
+    PPCallbacks::Elifdef(HashLoc, Loc, ConditionRange, IfLoc);
   }
-  void Elifndef(SourceLocation Loc, const Token &MacroNameTok,
-                const MacroDefinition &MD) override {
+  void Elifndef(SourceLocation HashLoc, SourceLocation Loc,
+                const Token &MacroNameTok, const MacroDefinition &MD) override {
     checkName(MacroNameTok);
   }
-  void Elifndef(SourceLocation Loc, SourceRange ConditionRange,
-      SourceLocation IfLoc) override {
-    PPCallbacks::Elifndef(Loc, ConditionRange, IfLoc);
+  void Elifndef(SourceLocation HashLoc, SourceLocation Loc,
+                SourceRange ConditionRange, SourceLocation IfLoc) override {
+    PPCallbacks::Elifndef(HashLoc, Loc, ConditionRange, IfLoc);
   }
-  void Endif(SourceLocation Loc, SourceLocation IfLoc) override;
+  void Endif(SourceLocation HashLoc, SourceLocation Loc,
+             SourceLocation IfLoc) override;
   void PragmaDirective(PragmaIntroducer Introducer) override;
 
   // After we've seen everything, issue warnings and fix-its.
@@ -331,7 +335,8 @@ bool MacroToEnumCallbacks::isInitializer(ArrayRef<Token> MacroTokens)
 
 // Any defined but rejected macro is scanned for identifiers that
 // are to be excluded as enums.
-void MacroToEnumCallbacks::MacroDefined(const Token &MacroNameTok,
+void MacroToEnumCallbacks::MacroDefined(SourceLocation HashLoc,
+                                        const Token &MacroNameTok,
                                         const MacroDirective *MD) {
   // Include guards are never candidates for becoming an enum.
   if (CurrentFile->GuardScanner == IncludeGuard::IfGuard) {
@@ -365,7 +370,8 @@ void MacroToEnumCallbacks::MacroDefined(const Token &MacroNameTok,
 
 // Any macro that is undefined removes all adjacent macros from consideration as
 // an enum and starts a new enum scan.
-void MacroToEnumCallbacks::MacroUndefined(const Token &MacroNameTok,
+void MacroToEnumCallbacks::MacroUndefined(SourceLocation HashLoc,
+                                          const Token &MacroNameTok,
                                           const MacroDefinition &MD,
                                           const MacroDirective *Undef) {
   rememberExpressionName(MacroNameTok);
@@ -384,7 +390,8 @@ void MacroToEnumCallbacks::MacroUndefined(const Token &MacroNameTok,
   CurrentFile->GuardScanner = IncludeGuard::None;
 }
 
-void MacroToEnumCallbacks::Endif(SourceLocation Loc, SourceLocation IfLoc) {
+void MacroToEnumCallbacks::Endif(SourceLocation HashLoc, SourceLocation Loc,
+                                 SourceLocation IfLoc) {
   // The if directive for the include guard isn't counted in the
   // ConditionScopes.
   if (CurrentFile->ConditionScopes == 0 &&

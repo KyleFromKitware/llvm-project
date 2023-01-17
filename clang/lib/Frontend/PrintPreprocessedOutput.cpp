@@ -149,22 +149,35 @@ public:
                           OptionalFileEntryRef File, StringRef SearchPath,
                           StringRef RelativePath, const Module *Imported,
                           SrcMgr::CharacteristicKind FileType) override;
-  void Ident(SourceLocation Loc, StringRef str) override;
-  void PragmaMessage(SourceLocation Loc, StringRef Namespace,
-                     PragmaMessageKind Kind, StringRef Str) override;
-  void PragmaDebug(SourceLocation Loc, StringRef DebugType) override;
-  void PragmaDiagnosticPush(SourceLocation Loc, StringRef Namespace) override;
-  void PragmaDiagnosticPop(SourceLocation Loc, StringRef Namespace) override;
-  void PragmaDiagnostic(SourceLocation Loc, StringRef Namespace,
-                        diag::Severity Map, StringRef Str) override;
-  void PragmaWarning(SourceLocation Loc, PragmaWarningSpecifier WarningSpec,
+  void Ident(SourceLocation HashLoc, SourceLocation Loc,
+             StringRef str) override;
+  void PragmaMessage(PragmaIntroducer Introducer, SourceLocation Loc,
+                     StringRef Namespace, PragmaMessageKind Kind,
+                     StringRef Str) override;
+  void PragmaDebug(PragmaIntroducer Introducer, SourceLocation Loc,
+                   StringRef DebugType) override;
+  void PragmaDiagnosticPush(PragmaIntroducer Introducer, SourceLocation Loc,
+                            StringRef Namespace) override;
+  void PragmaDiagnosticPop(PragmaIntroducer Introducer, SourceLocation Loc,
+                           StringRef Namespace) override;
+  void PragmaDiagnostic(PragmaIntroducer Introducer, SourceLocation Loc,
+                        StringRef Namespace, diag::Severity Map,
+                        StringRef Str) override;
+  void PragmaWarning(PragmaIntroducer Introducer, SourceLocation Loc,
+                     PragmaWarningSpecifier WarningSpec,
                      ArrayRef<int> Ids) override;
-  void PragmaWarningPush(SourceLocation Loc, int Level) override;
-  void PragmaWarningPop(SourceLocation Loc) override;
-  void PragmaExecCharsetPush(SourceLocation Loc, StringRef Str) override;
-  void PragmaExecCharsetPop(SourceLocation Loc) override;
-  void PragmaAssumeNonNullBegin(SourceLocation Loc) override;
-  void PragmaAssumeNonNullEnd(SourceLocation Loc) override;
+  void PragmaWarningPush(PragmaIntroducer Introducer, SourceLocation Loc,
+                         int Level) override;
+  void PragmaWarningPop(PragmaIntroducer Introducer,
+                        SourceLocation Loc) override;
+  void PragmaExecCharsetPush(PragmaIntroducer Introducer, SourceLocation Loc,
+                             StringRef Str) override;
+  void PragmaExecCharsetPop(PragmaIntroducer Introducer,
+                            SourceLocation Loc) override;
+  void PragmaAssumeNonNullBegin(PragmaIntroducer Introducer,
+                                SourceLocation Loc) override;
+  void PragmaAssumeNonNullEnd(PragmaIntroducer Introducer,
+                              SourceLocation Loc) override;
 
   /// Insert whitespace before emitting the next token.
   ///
@@ -215,11 +228,11 @@ public:
   void HandleNewlinesInToken(const char *TokStr, unsigned Len);
 
   /// MacroDefined - This hook is called whenever a macro definition is seen.
-  void MacroDefined(const Token &MacroNameTok,
+  void MacroDefined(SourceLocation HashLoc, const Token &MacroNameTok,
                     const MacroDirective *MD) override;
 
   /// MacroUndefined - This hook is called whenever a macro #undef is seen.
-  void MacroUndefined(const Token &MacroNameTok,
+  void MacroUndefined(SourceLocation HashLoc, const Token &MacroNameTok,
                       const MacroDefinition &MD,
                       const MacroDirective *Undef) override;
 
@@ -451,7 +464,8 @@ void PrintPPOutputPPCallbacks::EndModule(const Module *M) {
 
 /// Ident - Handle #ident directives when read by the preprocessor.
 ///
-void PrintPPOutputPPCallbacks::Ident(SourceLocation Loc, StringRef S) {
+void PrintPPOutputPPCallbacks::Ident(SourceLocation HashLoc, SourceLocation Loc,
+                                     StringRef S) {
   MoveToLine(Loc, /*RequireStartOfLine=*/true);
 
   OS.write("#ident ", strlen("#ident "));
@@ -460,7 +474,8 @@ void PrintPPOutputPPCallbacks::Ident(SourceLocation Loc, StringRef S) {
 }
 
 /// MacroDefined - This hook is called whenever a macro definition is seen.
-void PrintPPOutputPPCallbacks::MacroDefined(const Token &MacroNameTok,
+void PrintPPOutputPPCallbacks::MacroDefined(SourceLocation HashLoc,
+                                            const Token &MacroNameTok,
                                             const MacroDirective *MD) {
   const MacroInfo *MI = MD->getMacroInfo();
   // Print out macro definitions in -dD mode and when we have -fdirectives-only
@@ -482,7 +497,8 @@ void PrintPPOutputPPCallbacks::MacroDefined(const Token &MacroNameTok,
   setEmittedDirectiveOnThisLine();
 }
 
-void PrintPPOutputPPCallbacks::MacroUndefined(const Token &MacroNameTok,
+void PrintPPOutputPPCallbacks::MacroUndefined(SourceLocation HashLoc,
+                                              const Token &MacroNameTok,
                                               const MacroDefinition &MD,
                                               const MacroDirective *Undef) {
   // Print out macro definitions in -dD mode and when we have -fdirectives-only
@@ -507,7 +523,8 @@ static void outputPrintable(raw_ostream &OS, StringRef Str) {
   }
 }
 
-void PrintPPOutputPPCallbacks::PragmaMessage(SourceLocation Loc,
+void PrintPPOutputPPCallbacks::PragmaMessage(PragmaIntroducer Introducer,
+                                             SourceLocation Loc,
                                              StringRef Namespace,
                                              PragmaMessageKind Kind,
                                              StringRef Str) {
@@ -534,7 +551,8 @@ void PrintPPOutputPPCallbacks::PragmaMessage(SourceLocation Loc,
   setEmittedDirectiveOnThisLine();
 }
 
-void PrintPPOutputPPCallbacks::PragmaDebug(SourceLocation Loc,
+void PrintPPOutputPPCallbacks::PragmaDebug(PragmaIntroducer Introducer,
+                                           SourceLocation Loc,
                                            StringRef DebugType) {
   MoveToLine(Loc, /*RequireStartOfLine=*/true);
 
@@ -544,21 +562,24 @@ void PrintPPOutputPPCallbacks::PragmaDebug(SourceLocation Loc,
   setEmittedDirectiveOnThisLine();
 }
 
-void PrintPPOutputPPCallbacks::
-PragmaDiagnosticPush(SourceLocation Loc, StringRef Namespace) {
+void PrintPPOutputPPCallbacks::PragmaDiagnosticPush(PragmaIntroducer Introducer,
+                                                    SourceLocation Loc,
+                                                    StringRef Namespace) {
   MoveToLine(Loc, /*RequireStartOfLine=*/true);
   OS << "#pragma " << Namespace << " diagnostic push";
   setEmittedDirectiveOnThisLine();
 }
 
-void PrintPPOutputPPCallbacks::
-PragmaDiagnosticPop(SourceLocation Loc, StringRef Namespace) {
+void PrintPPOutputPPCallbacks::PragmaDiagnosticPop(PragmaIntroducer Introducer,
+                                                   SourceLocation Loc,
+                                                   StringRef Namespace) {
   MoveToLine(Loc, /*RequireStartOfLine=*/true);
   OS << "#pragma " << Namespace << " diagnostic pop";
   setEmittedDirectiveOnThisLine();
 }
 
-void PrintPPOutputPPCallbacks::PragmaDiagnostic(SourceLocation Loc,
+void PrintPPOutputPPCallbacks::PragmaDiagnostic(PragmaIntroducer Introducer,
+                                                SourceLocation Loc,
                                                 StringRef Namespace,
                                                 diag::Severity Map,
                                                 StringRef Str) {
@@ -585,7 +606,8 @@ void PrintPPOutputPPCallbacks::PragmaDiagnostic(SourceLocation Loc,
   setEmittedDirectiveOnThisLine();
 }
 
-void PrintPPOutputPPCallbacks::PragmaWarning(SourceLocation Loc,
+void PrintPPOutputPPCallbacks::PragmaWarning(PragmaIntroducer Introducer,
+                                             SourceLocation Loc,
                                              PragmaWarningSpecifier WarningSpec,
                                              ArrayRef<int> Ids) {
   MoveToLine(Loc, /*RequireStartOfLine=*/true);
@@ -610,7 +632,8 @@ void PrintPPOutputPPCallbacks::PragmaWarning(SourceLocation Loc,
   setEmittedDirectiveOnThisLine();
 }
 
-void PrintPPOutputPPCallbacks::PragmaWarningPush(SourceLocation Loc,
+void PrintPPOutputPPCallbacks::PragmaWarningPush(PragmaIntroducer Introducer,
+                                                 SourceLocation Loc,
                                                  int Level) {
   MoveToLine(Loc, /*RequireStartOfLine=*/true);
   OS << "#pragma warning(push";
@@ -620,14 +643,15 @@ void PrintPPOutputPPCallbacks::PragmaWarningPush(SourceLocation Loc,
   setEmittedDirectiveOnThisLine();
 }
 
-void PrintPPOutputPPCallbacks::PragmaWarningPop(SourceLocation Loc) {
+void PrintPPOutputPPCallbacks::PragmaWarningPop(PragmaIntroducer Introducer,
+                                                SourceLocation Loc) {
   MoveToLine(Loc, /*RequireStartOfLine=*/true);
   OS << "#pragma warning(pop)";
   setEmittedDirectiveOnThisLine();
 }
 
-void PrintPPOutputPPCallbacks::PragmaExecCharsetPush(SourceLocation Loc,
-                                                     StringRef Str) {
+void PrintPPOutputPPCallbacks::PragmaExecCharsetPush(
+    PragmaIntroducer Introducer, SourceLocation Loc, StringRef Str) {
   MoveToLine(Loc, /*RequireStartOfLine=*/true);
   OS << "#pragma character_execution_set(push";
   if (!Str.empty())
@@ -636,21 +660,22 @@ void PrintPPOutputPPCallbacks::PragmaExecCharsetPush(SourceLocation Loc,
   setEmittedDirectiveOnThisLine();
 }
 
-void PrintPPOutputPPCallbacks::PragmaExecCharsetPop(SourceLocation Loc) {
+void PrintPPOutputPPCallbacks::PragmaExecCharsetPop(PragmaIntroducer Introducer,
+                                                    SourceLocation Loc) {
   MoveToLine(Loc, /*RequireStartOfLine=*/true);
   OS << "#pragma character_execution_set(pop)";
   setEmittedDirectiveOnThisLine();
 }
 
-void PrintPPOutputPPCallbacks::
-PragmaAssumeNonNullBegin(SourceLocation Loc) {
+void PrintPPOutputPPCallbacks::PragmaAssumeNonNullBegin(
+    PragmaIntroducer Introducer, SourceLocation Loc) {
   MoveToLine(Loc, /*RequireStartOfLine=*/true);
   OS << "#pragma clang assume_nonnull begin";
   setEmittedDirectiveOnThisLine();
 }
 
-void PrintPPOutputPPCallbacks::
-PragmaAssumeNonNullEnd(SourceLocation Loc) {
+void PrintPPOutputPPCallbacks::PragmaAssumeNonNullEnd(
+    PragmaIntroducer Introducer, SourceLocation Loc) {
   MoveToLine(Loc, /*RequireStartOfLine=*/true);
   OS << "#pragma clang assume_nonnull end";
   setEmittedDirectiveOnThisLine();

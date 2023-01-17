@@ -36,14 +36,15 @@ public:
                                    Range.getBegin(), *MD.getMacroInfo());
   }
 
-  void MacroDefined(const Token &MacroNameTok,
+  void MacroDefined(SourceLocation HashLoc, const Token &MacroNameTok,
                     const MacroDirective *MD) override {
     IndexCtx->handleMacroDefined(*MacroNameTok.getIdentifierInfo(),
                                  MacroNameTok.getLocation(),
                                  *MD->getMacroInfo());
   }
 
-  void MacroUndefined(const Token &MacroNameTok, const MacroDefinition &MD,
+  void MacroUndefined(SourceLocation HashLoc, const Token &MacroNameTok,
+                      const MacroDefinition &MD,
                       const MacroDirective *Undef) override {
     if (!MD.getMacroInfo())  // Ignore noop #undef.
       return;
@@ -61,16 +62,16 @@ public:
                                    MacroNameTok.getLocation(),
                                    *MD.getMacroInfo());
   }
-  void Ifdef(SourceLocation Loc, const Token &MacroNameTok,
-             const MacroDefinition &MD) override {
+  void Ifdef(SourceLocation HashLoc, SourceLocation Loc,
+             const Token &MacroNameTok, const MacroDefinition &MD) override {
     if (!MD.getMacroInfo()) // Ignore non-existent macro.
       return;
     IndexCtx->handleMacroReference(*MacroNameTok.getIdentifierInfo(),
                                    MacroNameTok.getLocation(),
                                    *MD.getMacroInfo());
   }
-  void Ifndef(SourceLocation Loc, const Token &MacroNameTok,
-              const MacroDefinition &MD) override {
+  void Ifndef(SourceLocation HashLoc, SourceLocation Loc,
+              const Token &MacroNameTok, const MacroDefinition &MD) override {
     if (!MD.getMacroInfo()) // Ignore nonexistent macro.
       return;
     IndexCtx->handleMacroReference(*MacroNameTok.getIdentifierInfo(),
@@ -80,16 +81,16 @@ public:
 
   using PPCallbacks::Elifdef;
   using PPCallbacks::Elifndef;
-  void Elifdef(SourceLocation Loc, const Token &MacroNameTok,
-               const MacroDefinition &MD) override {
+  void Elifdef(SourceLocation HashLoc, SourceLocation Loc,
+               const Token &MacroNameTok, const MacroDefinition &MD) override {
     if (!MD.getMacroInfo()) // Ignore non-existent macro.
       return;
     IndexCtx->handleMacroReference(*MacroNameTok.getIdentifierInfo(),
                                    MacroNameTok.getLocation(),
                                    *MD.getMacroInfo());
   }
-  void Elifndef(SourceLocation Loc, const Token &MacroNameTok,
-                const MacroDefinition &MD) override {
+  void Elifndef(SourceLocation HashLoc, SourceLocation Loc,
+                const Token &MacroNameTok, const MacroDefinition &MD) override {
     if (!MD.getMacroInfo()) // Ignore non-existent macro.
       return;
     IndexCtx->handleMacroReference(*MacroNameTok.getIdentifierInfo(),

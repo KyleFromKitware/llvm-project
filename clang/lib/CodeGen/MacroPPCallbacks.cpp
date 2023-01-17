@@ -175,7 +175,8 @@ void MacroPPCallbacks::InclusionDirective(
   LastHashLoc = HashLoc;
 }
 
-void MacroPPCallbacks::MacroDefined(const Token &MacroNameTok,
+void MacroPPCallbacks::MacroDefined(SourceLocation HashLoc,
+                                    const Token &MacroNameTok,
                                     const MacroDirective *MD) {
   IdentifierInfo *Id = MacroNameTok.getIdentifierInfo();
   SourceLocation location = getCorrectLocation(MacroNameTok.getLocation());
@@ -188,7 +189,8 @@ void MacroPPCallbacks::MacroDefined(const Token &MacroNameTok,
                                      Name.str(), Value.str());
 }
 
-void MacroPPCallbacks::MacroUndefined(const Token &MacroNameTok,
+void MacroPPCallbacks::MacroUndefined(SourceLocation HashLoc,
+                                      const Token &MacroNameTok,
                                       const MacroDefinition &MD,
                                       const MacroDirective *Undef) {
   IdentifierInfo *Id = MacroNameTok.getIdentifierInfo();

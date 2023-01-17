@@ -749,14 +749,18 @@ public:
   void Defined(const clang::Token &MacroNameTok,
                const clang::MacroDefinition &MD,
                clang::SourceRange Range) override;
-  void If(clang::SourceLocation Loc, clang::SourceRange ConditionRange,
+  void If(clang::SourceLocation HashLoc, clang::SourceLocation Loc,
+          clang::SourceRange ConditionRange,
           clang::PPCallbacks::ConditionValueKind ConditionResult) override;
-  void Elif(clang::SourceLocation Loc, clang::SourceRange ConditionRange,
+  void Elif(clang::SourceLocation HashLoc, clang::SourceLocation Loc,
+            clang::SourceRange ConditionRange,
             clang::PPCallbacks::ConditionValueKind ConditionResult,
             clang::SourceLocation IfLoc) override;
-  void Ifdef(clang::SourceLocation Loc, const clang::Token &MacroNameTok,
+  void Ifdef(clang::SourceLocation HashLoc, clang::SourceLocation Loc,
+             const clang::Token &MacroNameTok,
              const clang::MacroDefinition &MD) override;
-  void Ifndef(clang::SourceLocation Loc, const clang::Token &MacroNameTok,
+  void Ifndef(clang::SourceLocation HashLoc, clang::SourceLocation Loc,
+              const clang::Token &MacroNameTok,
               const clang::MacroDefinition &MD) override;
 
 private:
@@ -1340,26 +1344,29 @@ void PreprocessorCallbacks::Defined(const clang::Token &MacroNameTok,
       (MI ? "true" : "false"), PPTracker.getCurrentInclusionPathHandle());
 }
 
-void PreprocessorCallbacks::If(clang::SourceLocation Loc,
-                               clang::SourceRange ConditionRange,
-                               clang::PPCallbacks::ConditionValueKind ConditionResult) {
+void PreprocessorCallbacks::If(
+    clang::SourceLocation HashLoc, clang::SourceLocation Loc,
+    clang::SourceRange ConditionRange,
+    clang::PPCallbacks::ConditionValueKind ConditionResult) {
   std::string Unexpanded(getSourceString(PP, ConditionRange));
   PPTracker.addConditionalExpansionInstance(
       PP, PPTracker.getCurrentHeaderHandle(), Loc, clang::tok::pp_if,
       ConditionResult, Unexpanded, PPTracker.getCurrentInclusionPathHandle());
 }
 
-void PreprocessorCallbacks::Elif(clang::SourceLocation Loc,
-                                 clang::SourceRange ConditionRange,
-                                 clang::PPCallbacks::ConditionValueKind ConditionResult,
-                                 clang::SourceLocation IfLoc) {
+void PreprocessorCallbacks::Elif(
+    clang::SourceLocation HashLoc, clang::SourceLocation Loc,
+    clang::SourceRange ConditionRange,
+    clang::PPCallbacks::ConditionValueKind ConditionResult,
+    clang::SourceLocation IfLoc) {
   std::string Unexpanded(getSourceString(PP, ConditionRange));
   PPTracker.addConditionalExpansionInstance(
       PP, PPTracker.getCurrentHeaderHandle(), Loc, clang::tok::pp_elif,
       ConditionResult, Unexpanded, PPTracker.getCurrentInclusionPathHandle());
 }
 
-void PreprocessorCallbacks::Ifdef(clang::SourceLocation Loc,
+void PreprocessorCallbacks::Ifdef(clang::SourceLocation HashLoc,
+                                  clang::SourceLocation Loc,
                                   const clang::Token &MacroNameTok,
                                   const clang::MacroDefinition &MD) {
   clang::PPCallbacks::ConditionValueKind IsDefined =
@@ -1370,7 +1377,8 @@ void PreprocessorCallbacks::Ifdef(clang::SourceLocation Loc,
       PPTracker.getCurrentInclusionPathHandle());
 }
 
-void PreprocessorCallbacks::Ifndef(clang::SourceLocation Loc,
+void PreprocessorCallbacks::Ifndef(clang::SourceLocation HashLoc,
+                                   clang::SourceLocation Loc,
                                    const clang::Token &MacroNameTok,
                                    const clang::MacroDefinition &MD) {
   clang::PPCallbacks::ConditionValueKind IsNotDefined =

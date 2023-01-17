@@ -51,7 +51,8 @@ public:
     InMainFile = isInsideMainFile(Loc, SM);
   }
 
-  void MacroDefined(const Token &MacroName, const MacroDirective *MD) override {
+  void MacroDefined(SourceLocation HashLoc, const Token &MacroName,
+                    const MacroDirective *MD) override {
     add(MacroName, MD->getMacroInfo(), /*IsDefinition=*/true);
   }
 
@@ -60,19 +61,19 @@ public:
     add(MacroName, MD.getMacroInfo());
   }
 
-  void MacroUndefined(const clang::Token &MacroName,
+  void MacroUndefined(SourceLocation HashLoc, const clang::Token &MacroName,
                       const clang::MacroDefinition &MD,
                       const clang::MacroDirective *Undef) override {
     add(MacroName, MD.getMacroInfo());
   }
 
-  void Ifdef(SourceLocation Loc, const Token &MacroName,
+  void Ifdef(SourceLocation HashLoc, SourceLocation Loc, const Token &MacroName,
              const MacroDefinition &MD) override {
     add(MacroName, MD.getMacroInfo());
   }
 
-  void Ifndef(SourceLocation Loc, const Token &MacroName,
-              const MacroDefinition &MD) override {
+  void Ifndef(SourceLocation HashLoc, SourceLocation Loc,
+              const Token &MacroName, const MacroDefinition &MD) override {
     add(MacroName, MD.getMacroInfo());
   }
 

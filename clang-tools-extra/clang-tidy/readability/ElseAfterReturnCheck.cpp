@@ -26,7 +26,8 @@ public:
       ElseAfterReturnCheck::ConditionalBranchMap &Collections,
       const SourceManager &SM)
       : Collections(Collections), SM(SM) {}
-  void Endif(SourceLocation Loc, SourceLocation IfLoc) override {
+  void Endif(SourceLocation HashLoc, SourceLocation Loc,
+             SourceLocation IfLoc) override {
     if (!SM.isWrittenInSameFile(Loc, IfLoc))
       return;
     SmallVectorImpl<SourceRange> &Collection = Collections[SM.getFileID(Loc)];

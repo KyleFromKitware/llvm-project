@@ -277,7 +277,7 @@ struct DirectiveCollector : public PPCallbacks {
     InMainFile = SM.isWrittenInMainFile(Loc);
   }
 
-  void MacroDefined(const Token &MacroNameTok,
+  void MacroDefined(SourceLocation HashLoc, const Token &MacroNameTok,
                     const MacroDirective *MD) override {
     if (!InMainFile)
       return;

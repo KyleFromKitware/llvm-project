@@ -77,46 +77,59 @@ private:
   // Handle all other callbacks.
   // Just parse to the corresponding location to generate PPCallbacks for the
   // corresponding range
-  void Ident(SourceLocation Loc, StringRef) override;
+  void Ident(SourceLocation HashLoc, SourceLocation Loc, StringRef) override;
   void PragmaDirective(PragmaIntroducer Introducer) override;
-  void PragmaComment(SourceLocation Loc, const IdentifierInfo *,
-                     StringRef) override;
-  void PragmaDetectMismatch(SourceLocation Loc, StringRef, StringRef) override;
-  void PragmaDebug(SourceLocation Loc, StringRef) override;
-  void PragmaMessage(SourceLocation Loc, StringRef, PragmaMessageKind,
-                     StringRef) override;
-  void PragmaDiagnosticPush(SourceLocation Loc, StringRef) override;
-  void PragmaDiagnosticPop(SourceLocation Loc, StringRef) override;
-  void PragmaDiagnostic(SourceLocation Loc, StringRef, diag::Severity,
-                        StringRef) override;
+  void PragmaComment(PragmaIntroducer Introducer, SourceLocation Loc,
+                     const IdentifierInfo *, StringRef) override;
+  void PragmaDetectMismatch(PragmaIntroducer Introducer, SourceLocation Loc,
+                            StringRef, StringRef) override;
+  void PragmaDebug(PragmaIntroducer Introducer, SourceLocation Loc,
+                   StringRef) override;
+  void PragmaMessage(PragmaIntroducer Introducer, SourceLocation Loc, StringRef,
+                     PragmaMessageKind, StringRef) override;
+  void PragmaDiagnosticPush(PragmaIntroducer Introducer, SourceLocation Loc,
+                            StringRef) override;
+  void PragmaDiagnosticPop(PragmaIntroducer Introducer, SourceLocation Loc,
+                           StringRef) override;
+  void PragmaDiagnostic(PragmaIntroducer Introducer, SourceLocation Loc,
+                        StringRef, diag::Severity, StringRef) override;
   void HasInclude(SourceLocation Loc, StringRef, bool, OptionalFileEntryRef,
                   SrcMgr::CharacteristicKind) override;
-  void PragmaOpenCLExtension(SourceLocation NameLoc, const IdentifierInfo *,
+  void PragmaOpenCLExtension(PragmaIntroducer Introducer,
+                             SourceLocation NameLoc, const IdentifierInfo *,
                              SourceLocation StateLoc, unsigned) override;
-  void PragmaWarning(SourceLocation Loc, PragmaWarningSpecifier,
-                     ArrayRef<int>) override;
-  void PragmaWarningPush(SourceLocation Loc, int) override;
-  void PragmaWarningPop(SourceLocation Loc) override;
-  void PragmaAssumeNonNullBegin(SourceLocation Loc) override;
-  void PragmaAssumeNonNullEnd(SourceLocation Loc) override;
+  void PragmaWarning(PragmaIntroducer Introducer, SourceLocation Loc,
+                     PragmaWarningSpecifier, ArrayRef<int>) override;
+  void PragmaWarningPush(PragmaIntroducer Introducer, SourceLocation Loc,
+                         int) override;
+  void PragmaWarningPop(PragmaIntroducer Introducer,
+                        SourceLocation Loc) override;
+  void PragmaAssumeNonNullBegin(PragmaIntroducer Introducer,
+                                SourceLocation Loc) override;
+  void PragmaAssumeNonNullEnd(PragmaIntroducer Introducer,
+                              SourceLocation Loc) override;
   void MacroExpands(const Token &MacroNameTok, const MacroDefinition &,
                     SourceRange Range, const MacroArgs *) override;
-  void MacroDefined(const Token &MacroNameTok,
+  void MacroDefined(SourceLocation HashLoc, const Token &MacroNameTok,
                     const MacroDirective *MD) override;
-  void MacroUndefined(const Token &, const MacroDefinition &,
+  void MacroUndefined(SourceLocation HashLoc, const Token &,
+                      const MacroDefinition &,
                       const MacroDirective *Undef) override;
   void Defined(const Token &MacroNameTok, const MacroDefinition &,
                SourceRange Range) override;
   void SourceRangeSkipped(SourceRange Range, SourceLocation EndifLoc) override;
-  void If(SourceLocation Loc, SourceRange, ConditionValueKind) override;
-  void Elif(SourceLocation Loc, SourceRange, ConditionValueKind,
-            SourceLocation) override;
-  void Ifdef(SourceLocation Loc, const Token &,
+  void If(SourceLocation HashLoc, SourceLocation Loc, SourceRange,
+          ConditionValueKind) override;
+  void Elif(SourceLocation HashLoc, SourceLocation Loc, SourceRange,
+            ConditionValueKind, SourceLocation) override;
+  void Ifdef(SourceLocation HashLoc, SourceLocation Loc, const Token &,
              const MacroDefinition &) override;
-  void Ifndef(SourceLocation Loc, const Token &,
+  void Ifndef(SourceLocation HashLoc, SourceLocation Loc, const Token &,
               const MacroDefinition &) override;
-  void Else(SourceLocation Loc, SourceLocation) override;
-  void Endif(SourceLocation Loc, SourceLocation) override;
+  void Else(SourceLocation HashLoc, SourceLocation Loc,
+            SourceLocation) override;
+  void Endif(SourceLocation HashLoc, SourceLocation Loc,
+             SourceLocation) override;
 
   std::unique_ptr<FileRecorder> Recorder;
   // Set of all the modules visited. Avoids processing a module more than once.

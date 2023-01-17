@@ -50,10 +50,11 @@ public:
                           StringRef RelativePath, const Module *Imported,
                           SrcMgr::CharacteristicKind FileType) override;
 
-  void MacroDefined(const Token &MacroNameTok,
+  void MacroDefined(SourceLocation HashLoc, const Token &MacroNameTok,
                     const MacroDirective *MD) override;
 
-  void MacroUndefined(const Token &MacroNameTok, const MacroDefinition &MD,
+  void MacroUndefined(SourceLocation HashLoc, const Token &MacroNameTok,
+                      const MacroDefinition &MD,
                       const MacroDirective *Undef) override;
 
 private:
@@ -91,12 +92,14 @@ void DuplicateIncludeCallbacks::InclusionDirective(
     Files.back().push_back(FileName);
 }
 
-void DuplicateIncludeCallbacks::MacroDefined(const Token &MacroNameTok,
+void DuplicateIncludeCallbacks::MacroDefined(SourceLocation HashLoc,
+                                             const Token &MacroNameTok,
                                              const MacroDirective *MD) {
   Files.back().clear();
 }
 
-void DuplicateIncludeCallbacks::MacroUndefined(const Token &MacroNameTok,
+void DuplicateIncludeCallbacks::MacroUndefined(SourceLocation HashLoc,
+                                               const Token &MacroNameTok,
                                                const MacroDefinition &MD,
                                                const MacroDirective *Undef) {
   Files.back().clear();

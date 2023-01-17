@@ -186,35 +186,36 @@ public:
   }
 
   /// Callback invoked when a \#ident or \#sccs directive is read.
+  /// \param HashLoc The location of the '#' that starts the directive.
   /// \param Loc The location of the directive.
   /// \param str The text of the directive.
   ///
-  virtual void Ident(SourceLocation Loc, StringRef str) {
-  }
+  virtual void Ident(SourceLocation HashLoc, SourceLocation Loc,
+                     StringRef str) {}
 
   /// Callback invoked when start reading any pragma directive.
   virtual void PragmaDirective(PragmaIntroducer Introducer) {}
 
   /// Callback invoked when a \#pragma comment directive is read.
-  virtual void PragmaComment(SourceLocation Loc, const IdentifierInfo *Kind,
-                             StringRef Str) {
-  }
+  virtual void PragmaComment(PragmaIntroducer Introducer, SourceLocation Loc,
+                             const IdentifierInfo *Kind, StringRef Str) {}
 
   /// Callback invoked when a \#pragma mark comment is read.
-  virtual void PragmaMark(SourceLocation Loc, StringRef Trivia) {
-  }
+  virtual void PragmaMark(PragmaIntroducer Introducer, SourceLocation Loc,
+                          StringRef Trivia) {}
 
   /// Callback invoked when a \#pragma detect_mismatch directive is
   /// read.
-  virtual void PragmaDetectMismatch(SourceLocation Loc, StringRef Name,
-                                    StringRef Value) {
-  }
+  virtual void PragmaDetectMismatch(PragmaIntroducer Introducer,
+                                    SourceLocation Loc, StringRef Name,
+                                    StringRef Value) {}
 
   /// Callback invoked when a \#pragma clang __debug directive is read.
+  /// \param Introducer The location and kind of the pragma directive.
   /// \param Loc The location of the debug directive.
   /// \param DebugType The identifier following __debug.
-  virtual void PragmaDebug(SourceLocation Loc, StringRef DebugType) {
-  }
+  virtual void PragmaDebug(PragmaIntroducer Introducer, SourceLocation Loc,
+                           StringRef DebugType) {}
 
   /// Determines the kind of \#pragma invoking a call to PragmaMessage.
   enum PragmaMessageKind {
@@ -229,36 +230,36 @@ public:
   };
 
   /// Callback invoked when a \#pragma message directive is read.
+  /// \param Introducer The location and kind of the pragma directive.
   /// \param Loc The location of the message directive.
   /// \param Namespace The namespace of the message directive.
   /// \param Kind The type of the message directive.
   /// \param Str The text of the message directive.
-  virtual void PragmaMessage(SourceLocation Loc, StringRef Namespace,
-                             PragmaMessageKind Kind, StringRef Str) {
-  }
+  virtual void PragmaMessage(PragmaIntroducer Introducer, SourceLocation Loc,
+                             StringRef Namespace, PragmaMessageKind Kind,
+                             StringRef Str) {}
 
   /// Callback invoked when a \#pragma gcc diagnostic push directive
   /// is read.
-  virtual void PragmaDiagnosticPush(SourceLocation Loc,
-                                    StringRef Namespace) {
-  }
+  virtual void PragmaDiagnosticPush(PragmaIntroducer Introducer,
+                                    SourceLocation Loc, StringRef Namespace) {}
 
   /// Callback invoked when a \#pragma gcc diagnostic pop directive
   /// is read.
-  virtual void PragmaDiagnosticPop(SourceLocation Loc,
-                                   StringRef Namespace) {
-  }
+  virtual void PragmaDiagnosticPop(PragmaIntroducer Introducer,
+                                   SourceLocation Loc, StringRef Namespace) {}
 
   /// Callback invoked when a \#pragma gcc diagnostic directive is read.
-  virtual void PragmaDiagnostic(SourceLocation Loc, StringRef Namespace,
-                                diag::Severity mapping, StringRef Str) {}
+  virtual void PragmaDiagnostic(PragmaIntroducer Introducer, SourceLocation Loc,
+                                StringRef Namespace, diag::Severity mapping,
+                                StringRef Str) {}
 
   /// Called when an OpenCL extension is either disabled or
   /// enabled with a pragma.
-  virtual void PragmaOpenCLExtension(SourceLocation NameLoc,
+  virtual void PragmaOpenCLExtension(PragmaIntroducer Introducer,
+                                     SourceLocation NameLoc,
                                      const IdentifierInfo *Name,
-                                     SourceLocation StateLoc, unsigned State) {
-  }
+                                     SourceLocation StateLoc, unsigned State) {}
 
   /// Callback invoked when a \#pragma warning directive is read.
   enum PragmaWarningSpecifier {
@@ -272,33 +273,37 @@ public:
     PWS_Level3,
     PWS_Level4,
   };
-  virtual void PragmaWarning(SourceLocation Loc,
+  virtual void PragmaWarning(PragmaIntroducer Introducer, SourceLocation Loc,
                              PragmaWarningSpecifier WarningSpec,
                              ArrayRef<int> Ids) {}
 
   /// Callback invoked when a \#pragma warning(push) directive is read.
-  virtual void PragmaWarningPush(SourceLocation Loc, int Level) {
-  }
+  virtual void PragmaWarningPush(PragmaIntroducer Introducer,
+                                 SourceLocation Loc, int Level) {}
 
   /// Callback invoked when a \#pragma warning(pop) directive is read.
-  virtual void PragmaWarningPop(SourceLocation Loc) {
-  }
+  virtual void PragmaWarningPop(PragmaIntroducer Introducer,
+                                SourceLocation Loc) {}
 
   /// Callback invoked when a \#pragma execution_character_set(push) directive
   /// is read.
-  virtual void PragmaExecCharsetPush(SourceLocation Loc, StringRef Str) {}
+  virtual void PragmaExecCharsetPush(PragmaIntroducer Introducer,
+                                     SourceLocation Loc, StringRef Str) {}
 
   /// Callback invoked when a \#pragma execution_character_set(pop) directive
   /// is read.
-  virtual void PragmaExecCharsetPop(SourceLocation Loc) {}
+  virtual void PragmaExecCharsetPop(PragmaIntroducer Introducer,
+                                    SourceLocation Loc) {}
 
   /// Callback invoked when a \#pragma clang assume_nonnull begin directive
   /// is read.
-  virtual void PragmaAssumeNonNullBegin(SourceLocation Loc) {}
+  virtual void PragmaAssumeNonNullBegin(PragmaIntroducer Introducer,
+                                        SourceLocation Loc) {}
 
   /// Callback invoked when a \#pragma clang assume_nonnull end directive
   /// is read.
-  virtual void PragmaAssumeNonNullEnd(SourceLocation Loc) {}
+  virtual void PragmaAssumeNonNullEnd(PragmaIntroducer Introducer,
+                                      SourceLocation Loc) {}
 
   /// Called by Preprocessor::HandleMacroExpandedIdentifier when a
   /// macro invocation is found.
@@ -307,20 +312,19 @@ public:
                             const MacroArgs *Args) {}
 
   /// Hook called whenever a macro definition is seen.
-  virtual void MacroDefined(const Token &MacroNameTok,
-                            const MacroDirective *MD) {
-  }
+  virtual void MacroDefined(SourceLocation HashLoc, const Token &MacroNameTok,
+                            const MacroDirective *MD) {}
 
   /// Hook called whenever a macro \#undef is seen.
+  /// \param HashLoc The location of the '#' that starts the directive.
   /// \param MacroNameTok The active Token
   /// \param MD A MacroDefinition for the named macro.
   /// \param Undef New MacroDirective if the macro was defined, null otherwise.
   ///
   /// MD is released immediately following this callback.
-  virtual void MacroUndefined(const Token &MacroNameTok,
+  virtual void MacroUndefined(SourceLocation HashLoc, const Token &MacroNameTok,
                               const MacroDefinition &MD,
-                              const MacroDirective *Undef) {
-  }
+                              const MacroDirective *Undef) {}
 
   /// Hook called whenever the 'defined' operator is seen.
   /// \param MD The MacroDirective if the name was a macro, null otherwise.
@@ -348,84 +352,88 @@ public:
   };
 
   /// Hook called whenever an \#if is seen.
+  /// \param HashLoc The location of the '#' that starts the directive.
   /// \param Loc the source location of the directive.
   /// \param ConditionRange The SourceRange of the expression being tested.
   /// \param ConditionValue The evaluated value of the condition.
   ///
   // FIXME: better to pass in a list (or tree!) of Tokens.
-  virtual void If(SourceLocation Loc, SourceRange ConditionRange,
-                  ConditionValueKind ConditionValue) {
-  }
+  virtual void If(SourceLocation HashLoc, SourceLocation Loc,
+                  SourceRange ConditionRange,
+                  ConditionValueKind ConditionValue) {}
 
   /// Hook called whenever an \#elif is seen.
+  /// \param HashLoc The location of the '#' that starts the directive.
   /// \param Loc the source location of the directive.
   /// \param ConditionRange The SourceRange of the expression being tested.
   /// \param ConditionValue The evaluated value of the condition.
   /// \param IfLoc the source location of the \#if/\#ifdef/\#ifndef directive.
   // FIXME: better to pass in a list (or tree!) of Tokens.
-  virtual void Elif(SourceLocation Loc, SourceRange ConditionRange,
-                    ConditionValueKind ConditionValue, SourceLocation IfLoc) {
-  }
+  virtual void Elif(SourceLocation HashLoc, SourceLocation Loc,
+                    SourceRange ConditionRange,
+                    ConditionValueKind ConditionValue, SourceLocation IfLoc) {}
 
   /// Hook called whenever an \#ifdef is seen.
+  /// \param HashLoc The location of the '#' that starts the directive.
   /// \param Loc the source location of the directive.
   /// \param MacroNameTok Information on the token being tested.
   /// \param MD The MacroDefinition if the name was a macro, null otherwise.
-  virtual void Ifdef(SourceLocation Loc, const Token &MacroNameTok,
-                     const MacroDefinition &MD) {
-  }
+  virtual void Ifdef(SourceLocation HashLoc, SourceLocation Loc,
+                     const Token &MacroNameTok, const MacroDefinition &MD) {}
 
   /// Hook called whenever an \#elifdef branch is taken.
+  /// \param HashLoc The location of the '#' that starts the directive.
   /// \param Loc the source location of the directive.
   /// \param MacroNameTok Information on the token being tested.
   /// \param MD The MacroDefinition if the name was a macro, null otherwise.
-  virtual void Elifdef(SourceLocation Loc, const Token &MacroNameTok,
-                       const MacroDefinition &MD) {
-  }
+  virtual void Elifdef(SourceLocation HashLoc, SourceLocation Loc,
+                       const Token &MacroNameTok, const MacroDefinition &MD) {}
   /// Hook called whenever an \#elifdef is skipped.
+  /// \param HashLoc The location of the '#' that starts the directive.
   /// \param Loc the source location of the directive.
   /// \param ConditionRange The SourceRange of the expression being tested.
   /// \param IfLoc the source location of the \#if/\#ifdef/\#ifndef directive.
   // FIXME: better to pass in a list (or tree!) of Tokens.
-  virtual void Elifdef(SourceLocation Loc, SourceRange ConditionRange,
-                       SourceLocation IfLoc) {
-  }
+  virtual void Elifdef(SourceLocation HashLoc, SourceLocation Loc,
+                       SourceRange ConditionRange, SourceLocation IfLoc) {}
 
   /// Hook called whenever an \#ifndef is seen.
+  /// \param HashLoc The location of the '#' that starts the directive.
   /// \param Loc the source location of the directive.
   /// \param MacroNameTok Information on the token being tested.
   /// \param MD The MacroDefiniton if the name was a macro, null otherwise.
-  virtual void Ifndef(SourceLocation Loc, const Token &MacroNameTok,
-                      const MacroDefinition &MD) {
-  }
+  virtual void Ifndef(SourceLocation HashLoc, SourceLocation Loc,
+                      const Token &MacroNameTok, const MacroDefinition &MD) {}
 
   /// Hook called whenever an \#elifndef branch is taken.
+  /// \param HashLoc The location of the '#' that starts the directive.
   /// \param Loc the source location of the directive.
   /// \param MacroNameTok Information on the token being tested.
   /// \param MD The MacroDefinition if the name was a macro, null otherwise.
-  virtual void Elifndef(SourceLocation Loc, const Token &MacroNameTok,
-                        const MacroDefinition &MD) {
-  }
+  virtual void Elifndef(SourceLocation HashLoc, SourceLocation Loc,
+                        const Token &MacroNameTok, const MacroDefinition &MD) {}
   /// Hook called whenever an \#elifndef is skipped.
+  /// \param HashLoc The location of the '#' that starts the directive.
   /// \param Loc the source location of the directive.
   /// \param ConditionRange The SourceRange of the expression being tested.
   /// \param IfLoc the source location of the \#if/\#ifdef/\#ifndef directive.
   // FIXME: better to pass in a list (or tree!) of Tokens.
-  virtual void Elifndef(SourceLocation Loc, SourceRange ConditionRange,
-                        SourceLocation IfLoc) {
-  }
+  virtual void Elifndef(SourceLocation HashLoc, SourceLocation Loc,
+                        SourceRange ConditionRange, SourceLocation IfLoc) {}
 
   /// Hook called whenever an \#else is seen.
+  /// \param HashLoc The location of the '#' that starts the directive.
   /// \param Loc the source location of the directive.
   /// \param IfLoc the source location of the \#if/\#ifdef/\#ifndef directive.
-  virtual void Else(SourceLocation Loc, SourceLocation IfLoc) {
-  }
+  virtual void Else(SourceLocation HashLoc, SourceLocation Loc,
+                    SourceLocation IfLoc) {}
 
   /// Hook called whenever an \#endif is seen.
+  /// \param HashLoc The location of the '#' that starts the directive.
   /// \param Loc the source location of the directive.
   /// \param IfLoc the source location of the \#if/\#ifdef/\#ifndef directive.
-  virtual void Endif(SourceLocation Loc, SourceLocation IfLoc) {
-  }
+  virtual void Endif(SourceLocation HashLoc, SourceLocation Loc,
+                     SourceLocation IfLoc) {}
 };
 
 /// Simple wrapper class for chaining callbacks.
@@ -504,9 +512,10 @@ public:
     Second->EndOfMainFile();
   }
 
-  void Ident(SourceLocation Loc, StringRef str) override {
-    First->Ident(Loc, str);
-    Second->Ident(Loc, str);
+  void Ident(SourceLocation HashLoc, SourceLocation Loc,
+             StringRef str) override {
+    First->Ident(HashLoc, Loc, str);
+    Second->Ident(HashLoc, Loc, str);
   }
 
   void PragmaDirective(PragmaIntroducer Introducer) override {
@@ -514,94 +523,108 @@ public:
     Second->PragmaDirective(Introducer);
   }
 
-  void PragmaComment(SourceLocation Loc, const IdentifierInfo *Kind,
+  void PragmaComment(PragmaIntroducer Introducer, SourceLocation Loc,
+                     const IdentifierInfo *Kind, StringRef Str) override {
+    First->PragmaComment(Introducer, Loc, Kind, Str);
+    Second->PragmaComment(Introducer, Loc, Kind, Str);
+  }
+
+  void PragmaMark(PragmaIntroducer Introducer, SourceLocation Loc,
+                  StringRef Trivia) override {
+    First->PragmaMark(Introducer, Loc, Trivia);
+    Second->PragmaMark(Introducer, Loc, Trivia);
+  }
+
+  void PragmaDetectMismatch(PragmaIntroducer Introducer, SourceLocation Loc,
+                            StringRef Name, StringRef Value) override {
+    First->PragmaDetectMismatch(Introducer, Loc, Name, Value);
+    Second->PragmaDetectMismatch(Introducer, Loc, Name, Value);
+  }
+
+  void PragmaDebug(PragmaIntroducer Introducer, SourceLocation Loc,
+                   StringRef DebugType) override {
+    First->PragmaDebug(Introducer, Loc, DebugType);
+    Second->PragmaDebug(Introducer, Loc, DebugType);
+  }
+
+  void PragmaMessage(PragmaIntroducer Introducer, SourceLocation Loc,
+                     StringRef Namespace, PragmaMessageKind Kind,
                      StringRef Str) override {
-    First->PragmaComment(Loc, Kind, Str);
-    Second->PragmaComment(Loc, Kind, Str);
+    First->PragmaMessage(Introducer, Loc, Namespace, Kind, Str);
+    Second->PragmaMessage(Introducer, Loc, Namespace, Kind, Str);
   }
 
-  void PragmaMark(SourceLocation Loc, StringRef Trivia) override {
-    First->PragmaMark(Loc, Trivia);
-    Second->PragmaMark(Loc, Trivia);
+  void PragmaDiagnosticPush(PragmaIntroducer Introducer, SourceLocation Loc,
+                            StringRef Namespace) override {
+    First->PragmaDiagnosticPush(Introducer, Loc, Namespace);
+    Second->PragmaDiagnosticPush(Introducer, Loc, Namespace);
   }
 
-  void PragmaDetectMismatch(SourceLocation Loc, StringRef Name,
-                            StringRef Value) override {
-    First->PragmaDetectMismatch(Loc, Name, Value);
-    Second->PragmaDetectMismatch(Loc, Name, Value);
+  void PragmaDiagnosticPop(PragmaIntroducer Introducer, SourceLocation Loc,
+                           StringRef Namespace) override {
+    First->PragmaDiagnosticPop(Introducer, Loc, Namespace);
+    Second->PragmaDiagnosticPop(Introducer, Loc, Namespace);
   }
 
-  void PragmaDebug(SourceLocation Loc, StringRef DebugType) override {
-    First->PragmaDebug(Loc, DebugType);
-    Second->PragmaDebug(Loc, DebugType);
-  }
-
-  void PragmaMessage(SourceLocation Loc, StringRef Namespace,
-                     PragmaMessageKind Kind, StringRef Str) override {
-    First->PragmaMessage(Loc, Namespace, Kind, Str);
-    Second->PragmaMessage(Loc, Namespace, Kind, Str);
-  }
-
-  void PragmaDiagnosticPush(SourceLocation Loc, StringRef Namespace) override {
-    First->PragmaDiagnosticPush(Loc, Namespace);
-    Second->PragmaDiagnosticPush(Loc, Namespace);
-  }
-
-  void PragmaDiagnosticPop(SourceLocation Loc, StringRef Namespace) override {
-    First->PragmaDiagnosticPop(Loc, Namespace);
-    Second->PragmaDiagnosticPop(Loc, Namespace);
-  }
-
-  void PragmaDiagnostic(SourceLocation Loc, StringRef Namespace,
-                        diag::Severity mapping, StringRef Str) override {
-    First->PragmaDiagnostic(Loc, Namespace, mapping, Str);
-    Second->PragmaDiagnostic(Loc, Namespace, mapping, Str);
+  void PragmaDiagnostic(PragmaIntroducer Introducer, SourceLocation Loc,
+                        StringRef Namespace, diag::Severity mapping,
+                        StringRef Str) override {
+    First->PragmaDiagnostic(Introducer, Loc, Namespace, mapping, Str);
+    Second->PragmaDiagnostic(Introducer, Loc, Namespace, mapping, Str);
   }
 
   void HasInclude(SourceLocation Loc, StringRef FileName, bool IsAngled,
                   OptionalFileEntryRef File,
                   SrcMgr::CharacteristicKind FileType) override;
 
-  void PragmaOpenCLExtension(SourceLocation NameLoc, const IdentifierInfo *Name,
+  void PragmaOpenCLExtension(PragmaIntroducer Introducer,
+                             SourceLocation NameLoc, const IdentifierInfo *Name,
                              SourceLocation StateLoc, unsigned State) override {
-    First->PragmaOpenCLExtension(NameLoc, Name, StateLoc, State);
-    Second->PragmaOpenCLExtension(NameLoc, Name, StateLoc, State);
+    First->PragmaOpenCLExtension(Introducer, NameLoc, Name, StateLoc, State);
+    Second->PragmaOpenCLExtension(Introducer, NameLoc, Name, StateLoc, State);
   }
 
-  void PragmaWarning(SourceLocation Loc, PragmaWarningSpecifier WarningSpec,
+  void PragmaWarning(PragmaIntroducer Introducer, SourceLocation Loc,
+                     PragmaWarningSpecifier WarningSpec,
                      ArrayRef<int> Ids) override {
-    First->PragmaWarning(Loc, WarningSpec, Ids);
-    Second->PragmaWarning(Loc, WarningSpec, Ids);
+    First->PragmaWarning(Introducer, Loc, WarningSpec, Ids);
+    Second->PragmaWarning(Introducer, Loc, WarningSpec, Ids);
   }
 
-  void PragmaWarningPush(SourceLocation Loc, int Level) override {
-    First->PragmaWarningPush(Loc, Level);
-    Second->PragmaWarningPush(Loc, Level);
+  void PragmaWarningPush(PragmaIntroducer Introducer, SourceLocation Loc,
+                         int Level) override {
+    First->PragmaWarningPush(Introducer, Loc, Level);
+    Second->PragmaWarningPush(Introducer, Loc, Level);
   }
 
-  void PragmaWarningPop(SourceLocation Loc) override {
-    First->PragmaWarningPop(Loc);
-    Second->PragmaWarningPop(Loc);
+  void PragmaWarningPop(PragmaIntroducer Introducer,
+                        SourceLocation Loc) override {
+    First->PragmaWarningPop(Introducer, Loc);
+    Second->PragmaWarningPop(Introducer, Loc);
   }
 
-  void PragmaExecCharsetPush(SourceLocation Loc, StringRef Str) override {
-    First->PragmaExecCharsetPush(Loc, Str);
-    Second->PragmaExecCharsetPush(Loc, Str);
+  void PragmaExecCharsetPush(PragmaIntroducer Introducer, SourceLocation Loc,
+                             StringRef Str) override {
+    First->PragmaExecCharsetPush(Introducer, Loc, Str);
+    Second->PragmaExecCharsetPush(Introducer, Loc, Str);
   }
 
-  void PragmaExecCharsetPop(SourceLocation Loc) override {
-    First->PragmaExecCharsetPop(Loc);
-    Second->PragmaExecCharsetPop(Loc);
+  void PragmaExecCharsetPop(PragmaIntroducer Introducer,
+                            SourceLocation Loc) override {
+    First->PragmaExecCharsetPop(Introducer, Loc);
+    Second->PragmaExecCharsetPop(Introducer, Loc);
   }
 
-  void PragmaAssumeNonNullBegin(SourceLocation Loc) override {
-    First->PragmaAssumeNonNullBegin(Loc);
-    Second->PragmaAssumeNonNullBegin(Loc);
+  void PragmaAssumeNonNullBegin(PragmaIntroducer Introducer,
+                                SourceLocation Loc) override {
+    First->PragmaAssumeNonNullBegin(Introducer, Loc);
+    Second->PragmaAssumeNonNullBegin(Introducer, Loc);
   }
 
-  void PragmaAssumeNonNullEnd(SourceLocation Loc) override {
-    First->PragmaAssumeNonNullEnd(Loc);
-    Second->PragmaAssumeNonNullEnd(Loc);
+  void PragmaAssumeNonNullEnd(PragmaIntroducer Introducer,
+                              SourceLocation Loc) override {
+    First->PragmaAssumeNonNullEnd(Introducer, Loc);
+    Second->PragmaAssumeNonNullEnd(Introducer, Loc);
   }
 
   void MacroExpands(const Token &MacroNameTok, const MacroDefinition &MD,
@@ -610,17 +633,17 @@ public:
     Second->MacroExpands(MacroNameTok, MD, Range, Args);
   }
 
-  void MacroDefined(const Token &MacroNameTok,
+  void MacroDefined(SourceLocation HashLoc, const Token &MacroNameTok,
                     const MacroDirective *MD) override {
-    First->MacroDefined(MacroNameTok, MD);
-    Second->MacroDefined(MacroNameTok, MD);
+    First->MacroDefined(HashLoc, MacroNameTok, MD);
+    Second->MacroDefined(HashLoc, MacroNameTok, MD);
   }
 
-  void MacroUndefined(const Token &MacroNameTok,
+  void MacroUndefined(SourceLocation HashLoc, const Token &MacroNameTok,
                       const MacroDefinition &MD,
                       const MacroDirective *Undef) override {
-    First->MacroUndefined(MacroNameTok, MD, Undef);
-    Second->MacroUndefined(MacroNameTok, MD, Undef);
+    First->MacroUndefined(HashLoc, MacroNameTok, MD, Undef);
+    Second->MacroUndefined(HashLoc, MacroNameTok, MD, Undef);
   }
 
   void Defined(const Token &MacroNameTok, const MacroDefinition &MD,
@@ -635,69 +658,73 @@ public:
   }
 
   /// Hook called whenever an \#if is seen.
-  void If(SourceLocation Loc, SourceRange ConditionRange,
+  void If(SourceLocation HashLoc, SourceLocation Loc,
+          SourceRange ConditionRange,
           ConditionValueKind ConditionValue) override {
-    First->If(Loc, ConditionRange, ConditionValue);
-    Second->If(Loc, ConditionRange, ConditionValue);
+    First->If(HashLoc, Loc, ConditionRange, ConditionValue);
+    Second->If(HashLoc, Loc, ConditionRange, ConditionValue);
   }
 
   /// Hook called whenever an \#elif is seen.
-  void Elif(SourceLocation Loc, SourceRange ConditionRange,
-            ConditionValueKind ConditionValue, SourceLocation IfLoc) override {
-    First->Elif(Loc, ConditionRange, ConditionValue, IfLoc);
-    Second->Elif(Loc, ConditionRange, ConditionValue, IfLoc);
+  void Elif(SourceLocation HashLoc, SourceLocation Loc,
+            SourceRange ConditionRange, ConditionValueKind ConditionValue,
+            SourceLocation IfLoc) override {
+    First->Elif(HashLoc, Loc, ConditionRange, ConditionValue, IfLoc);
+    Second->Elif(HashLoc, Loc, ConditionRange, ConditionValue, IfLoc);
   }
 
   /// Hook called whenever an \#ifdef is seen.
-  void Ifdef(SourceLocation Loc, const Token &MacroNameTok,
-             const MacroDefinition &MD) override {
-    First->Ifdef(Loc, MacroNameTok, MD);
-    Second->Ifdef(Loc, MacroNameTok, MD);
+  void Ifdef(SourceLocation HashLoc, SourceLocation Loc,
+             const Token &MacroNameTok, const MacroDefinition &MD) override {
+    First->Ifdef(HashLoc, Loc, MacroNameTok, MD);
+    Second->Ifdef(HashLoc, Loc, MacroNameTok, MD);
   }
 
   /// Hook called whenever an \#elifdef is taken.
-  void Elifdef(SourceLocation Loc, const Token &MacroNameTok,
-               const MacroDefinition &MD) override {
-    First->Elifdef(Loc, MacroNameTok, MD);
-    Second->Elifdef(Loc, MacroNameTok, MD);
+  void Elifdef(SourceLocation HashLoc, SourceLocation Loc,
+               const Token &MacroNameTok, const MacroDefinition &MD) override {
+    First->Elifdef(HashLoc, Loc, MacroNameTok, MD);
+    Second->Elifdef(HashLoc, Loc, MacroNameTok, MD);
   }
   /// Hook called whenever an \#elifdef is skipped.
-  void Elifdef(SourceLocation Loc, SourceRange ConditionRange,
-               SourceLocation IfLoc) override {
-    First->Elifdef(Loc, ConditionRange, IfLoc);
-    Second->Elifdef(Loc, ConditionRange, IfLoc);
+  void Elifdef(SourceLocation HashLoc, SourceLocation Loc,
+               SourceRange ConditionRange, SourceLocation IfLoc) override {
+    First->Elifdef(HashLoc, Loc, ConditionRange, IfLoc);
+    Second->Elifdef(HashLoc, Loc, ConditionRange, IfLoc);
   }
 
   /// Hook called whenever an \#ifndef is seen.
-  void Ifndef(SourceLocation Loc, const Token &MacroNameTok,
-              const MacroDefinition &MD) override {
-    First->Ifndef(Loc, MacroNameTok, MD);
-    Second->Ifndef(Loc, MacroNameTok, MD);
+  void Ifndef(SourceLocation HashLoc, SourceLocation Loc,
+              const Token &MacroNameTok, const MacroDefinition &MD) override {
+    First->Ifndef(HashLoc, Loc, MacroNameTok, MD);
+    Second->Ifndef(HashLoc, Loc, MacroNameTok, MD);
   }
 
   /// Hook called whenever an \#elifndef is taken.
-  void Elifndef(SourceLocation Loc, const Token &MacroNameTok,
-                const MacroDefinition &MD) override {
-    First->Elifndef(Loc, MacroNameTok, MD);
-    Second->Elifndef(Loc, MacroNameTok, MD);
+  void Elifndef(SourceLocation HashLoc, SourceLocation Loc,
+                const Token &MacroNameTok, const MacroDefinition &MD) override {
+    First->Elifndef(HashLoc, Loc, MacroNameTok, MD);
+    Second->Elifndef(HashLoc, Loc, MacroNameTok, MD);
   }
   /// Hook called whenever an \#elifndef is skipped.
-  void Elifndef(SourceLocation Loc, SourceRange ConditionRange,
-               SourceLocation IfLoc) override {
-    First->Elifndef(Loc, ConditionRange, IfLoc);
-    Second->Elifndef(Loc, ConditionRange, IfLoc);
+  void Elifndef(SourceLocation HashLoc, SourceLocation Loc,
+                SourceRange ConditionRange, SourceLocation IfLoc) override {
+    First->Elifndef(HashLoc, Loc, ConditionRange, IfLoc);
+    Second->Elifndef(HashLoc, Loc, ConditionRange, IfLoc);
   }
 
   /// Hook called whenever an \#else is seen.
-  void Else(SourceLocation Loc, SourceLocation IfLoc) override {
-    First->Else(Loc, IfLoc);
-    Second->Else(Loc, IfLoc);
+  void Else(SourceLocation HashLoc, SourceLocation Loc,
+            SourceLocation IfLoc) override {
+    First->Else(HashLoc, Loc, IfLoc);
+    Second->Else(HashLoc, Loc, IfLoc);
   }
 
   /// Hook called whenever an \#endif is seen.
-  void Endif(SourceLocation Loc, SourceLocation IfLoc) override {
-    First->Endif(Loc, IfLoc);
-    Second->Endif(Loc, IfLoc);
+  void Endif(SourceLocation HashLoc, SourceLocation Loc,
+             SourceLocation IfLoc) override {
+    First->Endif(HashLoc, Loc, IfLoc);
+    Second->Endif(HashLoc, Loc, IfLoc);
   }
 };
 

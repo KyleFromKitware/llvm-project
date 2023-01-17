@@ -106,13 +106,14 @@ public:
                           SrcMgr::CharacteristicKind FileType) override;
 
   /// Hook called whenever a macro definition is seen.
-  void MacroDefined(const Token &MacroNameTok,
+  void MacroDefined(SourceLocation HashLoc, const Token &MacroNameTok,
                     const MacroDirective *MD) override;
 
   /// Hook called whenever a macro \#undef is seen.
   ///
   /// MD is released immediately following this callback.
-  void MacroUndefined(const Token &MacroNameTok, const MacroDefinition &MD,
+  void MacroUndefined(SourceLocation HashLoc, const Token &MacroNameTok,
+                      const MacroDefinition &MD,
                       const MacroDirective *Undef) override;
 };
 
