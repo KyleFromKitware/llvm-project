@@ -20,36 +20,42 @@
 // CHECK-NEXT: - Callback: PragmaDirective
 // CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:3:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaComment
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:3:1", Kind: PIK_HashPragma}
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:3:9"
 // CHECK-NEXT:   Kind: compiler
 // CHECK-NEXT:   Str: compiler comment
 // CHECK-NEXT: - Callback: PragmaDirective
 // CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:4:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaComment
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:4:1", Kind: PIK_HashPragma}
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:4:9"
 // CHECK-NEXT:   Kind: exestr
 // CHECK-NEXT:   Str: exestr comment
 // CHECK-NEXT: - Callback: PragmaDirective
 // CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:5:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaComment
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:5:1", Kind: PIK_HashPragma}
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:5:9"
 // CHECK-NEXT:   Kind: lib
 // CHECK-NEXT:   Str: lib comment
 // CHECK-NEXT: - Callback: PragmaDirective
 // CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:6:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaComment
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:6:1", Kind: PIK_HashPragma}
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:6:9"
 // CHECK-NEXT:   Kind: linker
 // CHECK-NEXT:   Str: linker comment
 // CHECK-NEXT: - Callback: PragmaDirective
 // CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:7:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaComment
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:7:1", Kind: PIK_HashPragma}
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:7:9"
 // CHECK-NEXT:   Kind: user
 // CHECK-NEXT:   Str: user comment
 // CHECK-NEXT: - Callback: PragmaDirective
 // CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:9:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaDetectMismatch
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:9:1", Kind: PIK_HashPragma}
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:9:9"
 // CHECK-NEXT:   Name: name argument
 // CHECK-NEXT:   Value: value argument
@@ -58,6 +64,7 @@
 // CHECK-NEXT: - Callback: PragmaDirective
 // CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:13:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaMessage
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:13:1", Kind: PIK_HashPragma}
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:13:9"
 // CHECK-NEXT:   Namespace: 
 // CHECK-NEXT:   Kind: PMK_Message
@@ -65,23 +72,28 @@
 // CHECK-NEXT: - Callback: PragmaDirective
 // CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:15:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaWarningPush
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:15:1", Kind: PIK_HashPragma}
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:15:9"
 // CHECK-NEXT:   Level: 1
 // CHECK-NEXT: - Callback: PragmaDirective
 // CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:16:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaWarningPop
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:16:1", Kind: PIK_HashPragma}
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:16:9"
 // CHECK-NEXT: - Callback: PragmaDirective
 // CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:17:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaWarning
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:17:1", Kind: PIK_HashPragma}
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:17:9"
 // CHECK-NEXT:   WarningSpec: PWS_Disable
 // CHECK-NEXT:   Ids: [1, 2, 3]
 // CHECK-NEXT: - Callback: PragmaWarning
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:17:1", Kind: PIK_HashPragma}
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:17:9"
 // CHECK-NEXT:   WarningSpec: PWS_Error
 // CHECK-NEXT:   Ids: [4, 5, 6]
 // CHECK-NEXT: - Callback: PragmaWarning
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:17:1", Kind: PIK_HashPragma}
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:17:9"
 // CHECK-NEXT:   WarningSpec: PWS_Suppress
 // CHECK-NEXT:   Ids: [7, 8, 9]
