@@ -81,6 +81,7 @@
 // CHECK-NEXT:   FileType: C_User
 // CHECK-NEXT:   PrevFID: "{{.*}}{{[/\\]}}Inputs/Level1A.h"
 // CHECK-NEXT: - Callback: MacroDefined
+// CHECK-NEXT:   HashLoc: "{{.*}}{{[/\\]}}Inputs/Level2A.h:1:1"
 // CHECK-NEXT:   MacroNameTok: MACRO_2A
 // CHECK-NEXT:   MacroDirective: MD_Define
 // CHECK-NEXT: - Callback: FileChanged
@@ -89,6 +90,7 @@
 // CHECK-NEXT:   FileType: C_User
 // CHECK-NEXT:   PrevFID: "{{.*}}{{[/\\]}}Inputs/Level2A.h"
 // CHECK-NEXT: - Callback: MacroDefined
+// CHECK-NEXT:   HashLoc: "{{.*}}{{[/\\]}}Inputs/Level1A.h:2:1"
 // CHECK-NEXT:   MacroNameTok: MACRO_1A
 // CHECK-NEXT:   MacroDirective: MD_Define
 // CHECK-NEXT: - Callback: FileChanged
@@ -127,6 +129,7 @@
 // CHECK-NEXT:   FileType: C_User
 // CHECK-NEXT:   PrevFID: "{{.*}}{{[/\\]}}Inputs/Level1B.h"
 // CHECK-NEXT: - Callback: MacroDefined
+// CHECK-NEXT:   HashLoc: "{{.*}}{{[/\\]}}Inputs/Level2B.h:1:1"
 // CHECK-NEXT:   MacroNameTok: MACRO_2B
 // CHECK-NEXT:   MacroDirective: MD_Define
 // CHECK-NEXT: - Callback: FileChanged
@@ -135,6 +138,7 @@
 // CHECK-NEXT:   FileType: C_User
 // CHECK-NEXT:   PrevFID: "{{.*}}{{[/\\]}}Inputs/Level2B.h"
 // CHECK-NEXT: - Callback: MacroDefined
+// CHECK-NEXT:   HashLoc: "{{.*}}{{[/\\]}}Inputs/Level1B.h:2:1"
 // CHECK-NEXT:   MacroNameTok: MACRO_1B
 // CHECK-NEXT:   MacroDirective: MD_Define
 // CHECK-NEXT: - Callback: FileChanged

@@ -4,6 +4,7 @@
 
 // CHECK: ---
 // CHECK-NEXT: - Callback: Ident
+// CHECK-NEXT:   HashLoc: "{{.*}}{{[/\\]}}pp-trace-ident.cpp:3:1"
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-ident.cpp:3:2"
 // CHECK-NEXT:   Str: "$Id$"
 // CHECK-NEXT: - Callback: EndOfMainFile

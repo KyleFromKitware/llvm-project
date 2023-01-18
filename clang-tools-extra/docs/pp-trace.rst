@@ -279,12 +279,13 @@ Ident is called when a #ident or #sccs directive is read.
 
 Argument descriptions:
 
-==============   ==================================================   ============================== ==============================
+==============   ==================================================   ============================== ==================================================
 Argument Name    Argument Value Syntax                                Clang C++ Type                 Description
-==============   ==================================================   ============================== ==============================
+==============   ==================================================   ============================== ==================================================
+HashLoc          "(file):(line):(col)"                                SourceLocation                 The location of the '#' that starts the directive.
 Loc              "(file):(line):(col)"                                SourceLocation                 The location of the directive.
 str              (name)                                               const std::string              The text of the directive.
-==============   ==================================================   ============================== ==============================
+==============   ==================================================   ============================== ==================================================
 
 Example:::
 
@@ -318,13 +319,14 @@ PragmaComment is called when a #pragma comment directive is read.
 
 Argument descriptions:
 
-==============   ==================================================   ============================== ==============================
-Argument Name    Argument Value Syntax                                Clang C++ Type                 Description
-==============   ==================================================   ============================== ==============================
-Loc              "(file):(line):(col)"                                SourceLocation                 The location of the directive.
-Kind             ((name)|(null))                                      const IdentifierInfo           The comment kind symbol.
-Str              (message directive)                                  const std::string              The comment message directive.
-==============   ==================================================   ============================== ==============================
+==============   =============================================================================   ============================== ===============================================
+Argument Name    Argument Value Syntax                                                           Clang C++ Type                 Description
+==============   =============================================================================   ============================== ===============================================
+Introducer       {Loc: "(file):(line):(col)", Kind: (PIK_HashPragma|PIK__Pragma|PIK___pragma)}   PragmaIntroducer               The location and kind of the pragma introducer.
+Loc              "(file):(line):(col)"                                                           SourceLocation                 The location of the directive.
+Kind             ((name)|(null))                                                                 const IdentifierInfo           The comment kind symbol.
+Str              (message directive)                                                             const std::string              The comment message directive.
+==============   =============================================================================   ============================== ===============================================
 
 Example:::
 
@@ -340,13 +342,14 @@ PragmaDetectMismatch is called when a #pragma detect_mismatch directive is read.
 
 Argument descriptions:
 
-==============   ==================================================   ============================== ==============================
-Argument Name    Argument Value Syntax                                Clang C++ Type                 Description
-==============   ==================================================   ============================== ==============================
-Loc              "(file):(line):(col)"                                SourceLocation                 The location of the directive.
-Name             "(name)"                                             const std::string              The name.
-Value            (string)                                             const std::string              The value.
-==============   ==================================================   ============================== ==============================
+==============   =============================================================================   ============================== ===============================================
+Argument Name    Argument Value Syntax                                                           Clang C++ Type                 Description
+==============   =============================================================================   ============================== ===============================================
+Introducer       {Loc: "(file):(line):(col)", Kind: (PIK_HashPragma|PIK__Pragma|PIK___pragma)}   PragmaIntroducer               The location and kind of the pragma introducer.
+Loc              "(file):(line):(col)"                                                           SourceLocation                 The location of the directive.
+Name             "(name)"                                                                        const std::string              The name.
+Value            (string)                                                                        const std::string              The value.
+==============   =============================================================================   ============================== ===============================================
 
 Example:::
 
@@ -362,12 +365,13 @@ PragmaDebug is called when a #pragma clang __debug directive is read.
 
 Argument descriptions:
 
-==============   ==================================================   ============================== ================================
-Argument Name    Argument Value Syntax                                Clang C++ Type                 Description
-==============   ==================================================   ============================== ================================
-Loc              "(file):(line):(col)"                                SourceLocation                 The location of the directive.
-DebugType        (string)                                             StringRef                      Indicates type of debug message.
-==============   ==================================================   ============================== ================================
+==============   =============================================================================   ============================== ===============================================
+Argument Name    Argument Value Syntax                                                           Clang C++ Type                 Description
+==============   =============================================================================   ============================== ===============================================
+Introducer       {Loc: "(file):(line):(col)", Kind: (PIK_HashPragma|PIK__Pragma|PIK___pragma)}   PragmaIntroducer               The location and kind of the pragma introducer.
+Loc              "(file):(line):(col)"                                                           SourceLocation                 The location of the directive.
+DebugType        (string)                                                                        StringRef                      Indicates type of debug message.
+==============   =============================================================================   ============================== ===============================================
 
 Example:::
 
@@ -382,14 +386,15 @@ PragmaMessage is called when a #pragma message directive is read.
 
 Argument descriptions:
 
-==============   ==================================================   ============================== =======================================
+==============   =============================================================================   ============================== ===============================================
 Argument Name    Argument Value Syntax                                Clang C++ Type                 Description
-==============   ==================================================   ============================== =======================================
-Loc              "(file):(line):(col)"                                SourceLocation                 The location of the directive.
-Namespace        (name)                                               StringRef                      The namespace of the message directive.
-Kind             (PMK_Message|PMK_Warning|PMK_Error)                  PPCallbacks::PragmaMessageKind The type of the message directive.
-Str              (string)                                             StringRef                      The text of the message directive.
-==============   ==================================================   ============================== =======================================
+==============   =============================================================================   ============================== ===============================================
+Introducer       {Loc: "(file):(line):(col)", Kind: (PIK_HashPragma|PIK__Pragma|PIK___pragma)}   PragmaIntroducer               The location and kind of the pragma introducer.
+Loc              "(file):(line):(col)"                                                           SourceLocation                 The location of the directive.
+Namespace        (name)                                                                          StringRef                      The namespace of the message directive.
+Kind             (PMK_Message|PMK_Warning|PMK_Error)                                             PPCallbacks::PragmaMessageKind The type of the message directive.
+Str              (string)                                                                        StringRef                      The text of the message directive.
+==============   =============================================================================   ============================== ===============================================
 
 Example:::
 
@@ -406,12 +411,13 @@ PragmaDiagnosticPush is called when a #pragma gcc diagnostic push directive is r
 
 Argument descriptions:
 
-==============   ==================================================   ============================== ==============================
-Argument Name    Argument Value Syntax                                Clang C++ Type                 Description
-==============   ==================================================   ============================== ==============================
-Loc              "(file):(line):(col)"                                SourceLocation                 The location of the directive.
-Namespace        (name)                                               StringRef                      Namespace name.
-==============   ==================================================   ============================== ==============================
+==============   =============================================================================   ============================== ===============================================
+Argument Name    Argument Value Syntax                                                           Clang C++ Type                 Description
+==============   =============================================================================   ============================== ===============================================
+Introducer       {Loc: "(file):(line):(col)", Kind: (PIK_HashPragma|PIK__Pragma|PIK___pragma)}   PragmaIntroducer               The location and kind of the pragma introducer.
+Loc              "(file):(line):(col)"                                                           SourceLocation                 The location of the directive.
+Namespace        (name)                                                                          StringRef                      Namespace name.
+==============   =============================================================================   ============================== ===============================================
 
 Example:::
 
@@ -426,12 +432,13 @@ PragmaDiagnosticPop is called when a #pragma gcc diagnostic pop directive is rea
 
 Argument descriptions:
 
-==============   ==================================================   ============================== ==============================
-Argument Name    Argument Value Syntax                                Clang C++ Type                 Description
-==============   ==================================================   ============================== ==============================
-Loc              "(file):(line):(col)"                                SourceLocation                 The location of the directive.
-Namespace        (name)                                               StringRef                      Namespace name.
-==============   ==================================================   ============================== ==============================
+==============   =============================================================================   ============================== ===============================================
+Argument Name    Argument Value Syntax                                                           Clang C++ Type                 Description
+==============   =============================================================================   ============================== ===============================================
+Introducer       {Loc: "(file):(line):(col)", Kind: (PIK_HashPragma|PIK__Pragma|PIK___pragma)}   PragmaIntroducer               The location and kind of the pragma introducer.
+Loc              "(file):(line):(col)"                                                           SourceLocation                 The location of the directive.
+Namespace        (name)                                                                          StringRef                      Namespace name.
+==============   =============================================================================   ============================== ===============================================
 
 Example:::
 
@@ -446,14 +453,15 @@ PragmaDiagnostic is called when a #pragma gcc diagnostic directive is read.
 
 Argument descriptions:
 
-==============   ==================================================   ============================== ==============================
-Argument Name    Argument Value Syntax                                Clang C++ Type                 Description
-==============   ==================================================   ============================== ==============================
-Loc              "(file):(line):(col)"                                SourceLocation                 The location of the directive.
-Namespace        (name)                                               StringRef                      Namespace name.
-mapping          (0|MAP_IGNORE|MAP_WARNING|MAP_ERROR|MAP_FATAL)       diag::Severity                 Mapping type.
-Str              (string)                                             StringRef                      Warning/error name.
-==============   ==================================================   ============================== ==============================
+==============   =============================================================================   ============================== ===============================================
+Argument Name    Argument Value Syntax                                                           Clang C++ Type                 Description
+==============   =============================================================================   ============================== ===============================================
+Introducer       {Loc: "(file):(line):(col)", Kind: (PIK_HashPragma|PIK__Pragma|PIK___pragma)}   PragmaIntroducer               The location and kind of the pragma introducer.
+Loc              "(file):(line):(col)"                                                           SourceLocation                 The location of the directive.
+Namespace        (name)                                                                          StringRef                      Namespace name.
+mapping          (0|MAP_IGNORE|MAP_WARNING|MAP_ERROR|MAP_FATAL)                                  diag::Severity                 Mapping type.
+Str              (string)                                                                        StringRef                      Warning/error name.
+==============   =============================================================================   ============================== ===============================================
 
 Example:::
 
@@ -470,14 +478,15 @@ PragmaOpenCLExtension is called when OpenCL extension is either disabled or enab
 
 Argument descriptions:
 
-==============   ==================================================   ============================== ==========================
-Argument Name    Argument Value Syntax                                Clang C++ Type                 Description
-==============   ==================================================   ============================== ==========================
-NameLoc          "(file):(line):(col)"                                SourceLocation                 The location of the name.
-Name             (name)                                               const IdentifierInfo           Name symbol.
-StateLoc         "(file):(line):(col)"                                SourceLocation                 The location of the state.
-State            (1|0)                                                unsigned                       Enabled/disabled state.
-==============   ==================================================   ============================== ==========================
+==============   =============================================================================   ============================== ===============================================
+Argument Name    Argument Value Syntax                                                           Clang C++ Type                 Description
+==============   =============================================================================   ============================== ===============================================
+Introducer       {Loc: "(file):(line):(col)", Kind: (PIK_HashPragma|PIK__Pragma|PIK___pragma)}   PragmaIntroducer               The location and kind of the pragma introducer.
+NameLoc          "(file):(line):(col)"                                                           SourceLocation                 The location of the name.
+Name             (name)                                                                          const IdentifierInfo           Name symbol.
+StateLoc         "(file):(line):(col)"                                                           SourceLocation                 The location of the state.
+State            (1|0)                                                                           unsigned                       Enabled/disabled state.
+==============   =============================================================================   ============================== ===============================================
 
 Example:::
 
@@ -494,13 +503,14 @@ PragmaWarning is called when a #pragma warning directive is read.
 
 Argument descriptions:
 
-==============   ==================================================   ============================== ==============================
-Argument Name    Argument Value Syntax                                Clang C++ Type                 Description
-==============   ==================================================   ============================== ==============================
-Loc              "(file):(line):(col)"                                SourceLocation                 The location of the directive.
-WarningSpec      (string)                                             StringRef                      The warning specifier.
-Ids              [(number)[, ...]]                                    ArrayRef<int>                  The warning numbers.
-==============   ==================================================   ============================== ==============================
+==============   =============================================================================   ============================== ===============================================
+Argument Name    Argument Value Syntax                                                           Clang C++ Type                 Description
+==============   =============================================================================   ============================== ===============================================
+Introducer       {Loc: "(file):(line):(col)", Kind: (PIK_HashPragma|PIK__Pragma|PIK___pragma)}   PragmaIntroducer               The location and kind of the pragma introducer.
+Loc              "(file):(line):(col)"                                                           SourceLocation                 The location of the directive.
+WarningSpec      (string)                                                                        StringRef                      The warning specifier.
+Ids              [(number)[, ...]]                                                               ArrayRef<int>                  The warning numbers.
+==============   =============================================================================   ============================== ===============================================
 
 Example:::
 
@@ -516,12 +526,13 @@ PragmaWarningPush is called when a #pragma warning(push) directive is read.
 
 Argument descriptions:
 
-==============   ==================================================   ============================== ==============================
-Argument Name    Argument Value Syntax                                Clang C++ Type                 Description
-==============   ==================================================   ============================== ==============================
-Loc              "(file):(line):(col)"                                SourceLocation                 The location of the directive.
-Level            (number)                                             int                            Warning level.
-==============   ==================================================   ============================== ==============================
+==============   =============================================================================   ============================== ===============================================
+Argument Name    Argument Value Syntax                                                           Clang C++ Type                 Description
+==============   =============================================================================   ============================== ===============================================
+Introducer       {Loc: "(file):(line):(col)", Kind: (PIK_HashPragma|PIK__Pragma|PIK___pragma)}   PragmaIntroducer               The location and kind of the pragma introducer.
+Loc              "(file):(line):(col)"                                                           SourceLocation                 The location of the directive.
+Level            (number)                                                                        int                            Warning level.
+==============   =============================================================================   ============================== ===============================================
 
 Example:::
 
@@ -536,11 +547,12 @@ PragmaWarningPop is called when a #pragma warning(pop) directive is read.
 
 Argument descriptions:
 
-==============   ==================================================   ============================== ==============================
-Argument Name    Argument Value Syntax                                Clang C++ Type                 Description
-==============   ==================================================   ============================== ==============================
-Loc              "(file):(line):(col)"                                SourceLocation                 The location of the directive.
-==============   ==================================================   ============================== ==============================
+==============   =============================================================================   ============================== ===============================================
+Argument Name    Argument Value Syntax                                                           Clang C++ Type                 Description
+==============   =============================================================================   ============================== ===============================================
+Introducer       {Loc: "(file):(line):(col)", Kind: (PIK_HashPragma|PIK__Pragma|PIK___pragma)}   PragmaIntroducer               The location and kind of the pragma introducer.
+Loc              "(file):(line):(col)"                                                           SourceLocation                 The location of the directive.
+==============   =============================================================================   ============================== ===============================================
 
 Example:::
 
@@ -581,6 +593,7 @@ Argument descriptions:
 ==============   ==================================================   ============================== ==============================================================
 Argument Name    Argument Value Syntax                                Clang C++ Type                 Description
 ==============   ==================================================   ============================== ==============================================================
+HashLoc          "(file):(line):(col)"                                SourceLocation                 The location of the '#' that starts the directive.
 MacroNameTok     (token)                                              const Token                    The macro name token.
 MacroDirective   (MD_Define|MD_Undefine|MD_Visibility)                const MacroDirective           The kind of macro directive from the MacroDirective structure.
 ==============   ==================================================   ============================== ==============================================================
@@ -601,6 +614,7 @@ Argument descriptions:
 ==============   ==================================================   ============================== ==============================================================
 Argument Name    Argument Value Syntax                                Clang C++ Type                 Description
 ==============   ==================================================   ============================== ==============================================================
+HashLoc          "(file):(line):(col)"                                SourceLocation                 The location of the '#' that starts the directive.
 MacroNameTok     (token)                                              const Token                    The macro name token.
 MacroDirective   (MD_Define|MD_Undefine|MD_Visibility)                const MacroDirective           The kind of macro directive from the MacroDirective structure.
 ==============   ==================================================   ============================== ==============================================================
@@ -658,13 +672,14 @@ If is called when an #if is seen.
 
 Argument descriptions:
 
-==============   ==================================================   ============================== ===================================
+==============   ==================================================   ============================== ==================================================
 Argument Name    Argument Value Syntax                                Clang C++ Type                 Description
-==============   ==================================================   ============================== ===================================
+==============   ==================================================   ============================== ==================================================
+HashLoc          "(file):(line):(col)"                                SourceLocation                 The location of the '#' that starts the directive.
 Loc              "(file):(line):(col)"                                SourceLocation                 The location of the directive.
 ConditionRange   ["(file):(line):(col)", "(file):(line):(col)"]       SourceRange                    The source range for the condition.
 ConditionValue   (true|false)                                         bool                           The condition value.
-==============   ==================================================   ============================== ===================================
+==============   ==================================================   ============================== ==================================================
 
 Example:::
 
@@ -680,14 +695,15 @@ Elif is called when an #elif is seen.
 
 Argument descriptions:
 
-==============   ==================================================   ============================== ===================================
+==============   ==================================================   ============================== ==================================================
 Argument Name    Argument Value Syntax                                Clang C++ Type                 Description
-==============   ==================================================   ============================== ===================================
+==============   ==================================================   ============================== ==================================================
+HashLoc          "(file):(line):(col)"                                SourceLocation                 The location of the '#' that starts the directive.
 Loc              "(file):(line):(col)"                                SourceLocation                 The location of the directive.
 ConditionRange   ["(file):(line):(col)", "(file):(line):(col)"]       SourceRange                    The source range for the condition.
 ConditionValue   (true|false)                                         bool                           The condition value.
 IfLoc            "(file):(line):(col)"                                SourceLocation                 The location of the directive.
-==============   ==================================================   ============================== ===================================
+==============   ==================================================   ============================== ==================================================
 
 Example:::
 
@@ -707,6 +723,7 @@ Argument descriptions:
 ==============   ==================================================   ============================== ==============================================================
 Argument Name    Argument Value Syntax                                Clang C++ Type                 Description
 ==============   ==================================================   ============================== ==============================================================
+HashLoc          "(file):(line):(col)"                                SourceLocation                 The location of the '#' that starts the directive.
 Loc              "(file):(line):(col)"                                SourceLocation                 The location of the directive.
 MacroNameTok     (token)                                              const Token                    The macro name token.
 MacroDirective   (MD_Define|MD_Undefine|MD_Visibility)                const MacroDirective           The kind of macro directive from the MacroDirective structure.
@@ -729,6 +746,7 @@ Argument descriptions:
 ==============   ==================================================   ============================== ==============================================================
 Argument Name    Argument Value Syntax                                Clang C++ Type                 Description
 ==============   ==================================================   ============================== ==============================================================
+HashLoc          "(file):(line):(col)"                                SourceLocation                 The location of the '#' that starts the directive.
 Loc              "(file):(line):(col)"                                SourceLocation                 The location of the directive.
 MacroNameTok     (token)                                              const Token                    The macro name token.
 MacroDirective   (MD_Define|MD_Undefine|MD_Visibility)                const MacroDirective           The kind of macro directive from the MacroDirective structure.
@@ -748,12 +766,13 @@ Else is called when an #else is seen.
 
 Argument descriptions:
 
-==============   ==================================================   ============================== ===================================
+==============   ==================================================   ============================== ==================================================
 Argument Name    Argument Value Syntax                                Clang C++ Type                 Description
-==============   ==================================================   ============================== ===================================
+==============   ==================================================   ============================== ==================================================
+HashLoc          "(file):(line):(col)"                                SourceLocation                 The location of the '#' that starts the directive.
 Loc              "(file):(line):(col)"                                SourceLocation                 The location of the else directive.
 IfLoc            "(file):(line):(col)"                                SourceLocation                 The location of the if directive.
-==============   ==================================================   ============================== ===================================
+==============   ==================================================   ============================== ==================================================
 
 Example:::
 
@@ -768,12 +787,13 @@ Endif is called when an #endif is seen.
 
 Argument descriptions:
 
-==============   ==================================================   ============================== ====================================
+==============   ==================================================   ============================== ==================================================
 Argument Name    Argument Value Syntax                                Clang C++ Type                 Description
-==============   ==================================================   ============================== ====================================
+==============   ==================================================   ============================== ==================================================
+HashLoc          "(file):(line):(col)"                                SourceLocation                 The location of the '#' that starts the directive.
 Loc              "(file):(line):(col)"                                SourceLocation                 The location of the endif directive.
 IfLoc            "(file):(line):(col)"                                SourceLocation                 The location of the if directive.
-==============   ==================================================   ============================== ====================================
+==============   ==================================================   ============================== ==================================================
 
 Example:::
 
