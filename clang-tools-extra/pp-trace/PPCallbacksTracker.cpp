@@ -167,6 +167,7 @@ void PPCallbacksTracker::EndOfMainFile() { beginCallback("EndOfMainFile"); }
 void PPCallbacksTracker::Ident(SourceLocation HashLoc, SourceLocation Loc,
                                llvm::StringRef Str) {
   beginCallback("Ident");
+  appendArgument("HashLoc", HashLoc);
   appendArgument("Loc", Loc);
   appendArgument("Str", Str);
 }
@@ -183,6 +184,7 @@ void PPCallbacksTracker::PragmaComment(PragmaIntroducer Introducer,
                                        const IdentifierInfo *Kind,
                                        llvm::StringRef Str) {
   beginCallback("PragmaComment");
+  appendArgument("Introducer", Introducer);
   appendArgument("Loc", Loc);
   appendArgument("Kind", Kind);
   appendArgument("Str", Str);
@@ -195,6 +197,7 @@ void PPCallbacksTracker::PragmaDetectMismatch(PragmaIntroducer Introducer,
                                               llvm::StringRef Name,
                                               llvm::StringRef Value) {
   beginCallback("PragmaDetectMismatch");
+  appendArgument("Introducer", Introducer);
   appendArgument("Loc", Loc);
   appendArgument("Name", Name);
   appendArgument("Value", Value);
@@ -205,6 +208,7 @@ void PPCallbacksTracker::PragmaDebug(PragmaIntroducer Introducer,
                                      SourceLocation Loc,
                                      llvm::StringRef DebugType) {
   beginCallback("PragmaDebug");
+  appendArgument("Introducer", Introducer);
   appendArgument("Loc", Loc);
   appendArgument("DebugType", DebugType);
 }
@@ -216,6 +220,7 @@ void PPCallbacksTracker::PragmaMessage(PragmaIntroducer Introducer,
                                        PPCallbacks::PragmaMessageKind Kind,
                                        llvm::StringRef Str) {
   beginCallback("PragmaMessage");
+  appendArgument("Introducer", Introducer);
   appendArgument("Loc", Loc);
   appendArgument("Namespace", Namespace);
   appendArgument("Kind", Kind, PragmaMessageKindStrings);
@@ -228,6 +233,7 @@ void PPCallbacksTracker::PragmaDiagnosticPush(PragmaIntroducer Introducer,
                                               SourceLocation Loc,
                                               llvm::StringRef Namespace) {
   beginCallback("PragmaDiagnosticPush");
+  appendArgument("Introducer", Introducer);
   appendArgument("Loc", Loc);
   appendArgument("Namespace", Namespace);
 }
@@ -238,6 +244,7 @@ void PPCallbacksTracker::PragmaDiagnosticPop(PragmaIntroducer Introducer,
                                              SourceLocation Loc,
                                              llvm::StringRef Namespace) {
   beginCallback("PragmaDiagnosticPop");
+  appendArgument("Introducer", Introducer);
   appendArgument("Loc", Loc);
   appendArgument("Namespace", Namespace);
 }
@@ -249,6 +256,7 @@ void PPCallbacksTracker::PragmaDiagnostic(PragmaIntroducer Introducer,
                                           diag::Severity Mapping,
                                           llvm::StringRef Str) {
   beginCallback("PragmaDiagnostic");
+  appendArgument("Introducer", Introducer);
   appendArgument("Loc", Loc);
   appendArgument("Namespace", Namespace);
   appendArgument("Mapping", (unsigned)Mapping, MappingStrings);
@@ -263,6 +271,7 @@ void PPCallbacksTracker::PragmaOpenCLExtension(PragmaIntroducer Introducer,
                                                SourceLocation StateLoc,
                                                unsigned State) {
   beginCallback("PragmaOpenCLExtension");
+  appendArgument("Introducer", Introducer);
   appendArgument("NameLoc", NameLoc);
   appendArgument("Name", Name);
   appendArgument("StateLoc", StateLoc);
@@ -275,6 +284,7 @@ void PPCallbacksTracker::PragmaWarning(PragmaIntroducer Introducer,
                                        PragmaWarningSpecifier WarningSpec,
                                        llvm::ArrayRef<int> Ids) {
   beginCallback("PragmaWarning");
+  appendArgument("Introducer", Introducer);
   appendArgument("Loc", Loc);
   appendArgument("WarningSpec", WarningSpec, PragmaWarningSpecifierStrings);
 
@@ -294,6 +304,7 @@ void PPCallbacksTracker::PragmaWarning(PragmaIntroducer Introducer,
 void PPCallbacksTracker::PragmaWarningPush(PragmaIntroducer Introducer,
                                            SourceLocation Loc, int Level) {
   beginCallback("PragmaWarningPush");
+  appendArgument("Introducer", Introducer);
   appendArgument("Loc", Loc);
   appendArgument("Level", Level);
 }
@@ -302,6 +313,7 @@ void PPCallbacksTracker::PragmaWarningPush(PragmaIntroducer Introducer,
 void PPCallbacksTracker::PragmaWarningPop(PragmaIntroducer Introducer,
                                           SourceLocation Loc) {
   beginCallback("PragmaWarningPop");
+  appendArgument("Introducer", Introducer);
   appendArgument("Loc", Loc);
 }
 
@@ -311,6 +323,7 @@ void PPCallbacksTracker::PragmaExecCharsetPush(PragmaIntroducer Introducer,
                                                SourceLocation Loc,
                                                StringRef Str) {
   beginCallback("PragmaExecCharsetPush");
+  appendArgument("Introducer", Introducer);
   appendArgument("Loc", Loc);
   appendArgument("Charset", Str);
 }
@@ -320,6 +333,7 @@ void PPCallbacksTracker::PragmaExecCharsetPush(PragmaIntroducer Introducer,
 void PPCallbacksTracker::PragmaExecCharsetPop(PragmaIntroducer Introducer,
                                               SourceLocation Loc) {
   beginCallback("PragmaExecCharsetPop");
+  appendArgument("Introducer", Introducer);
   appendArgument("Loc", Loc);
 }
 
@@ -341,6 +355,7 @@ void PPCallbacksTracker::MacroDefined(SourceLocation HashLoc,
                                       const Token &MacroNameTok,
                                       const MacroDirective *MacroDirective) {
   beginCallback("MacroDefined");
+  appendArgument("HashLoc", HashLoc);
   appendArgument("MacroNameTok", MacroNameTok);
   appendArgument("MacroDirective", MacroDirective);
 }
@@ -351,6 +366,7 @@ void PPCallbacksTracker::MacroUndefined(SourceLocation HashLoc,
                                         const MacroDefinition &MacroDefinition,
                                         const MacroDirective *Undef) {
   beginCallback("MacroUndefined");
+  appendArgument("HashLoc", HashLoc);
   appendArgument("MacroNameTok", MacroNameTok);
   appendArgument("MacroDefinition", MacroDefinition);
 }
@@ -377,6 +393,7 @@ void PPCallbacksTracker::If(SourceLocation HashLoc, SourceLocation Loc,
                             SourceRange ConditionRange,
                             ConditionValueKind ConditionValue) {
   beginCallback("If");
+  appendArgument("HashLoc", HashLoc);
   appendArgument("Loc", Loc);
   appendArgument("ConditionRange", ConditionRange);
   appendArgument("ConditionValue", ConditionValue, ConditionValueKindStrings);
@@ -388,6 +405,7 @@ void PPCallbacksTracker::Elif(SourceLocation HashLoc, SourceLocation Loc,
                               ConditionValueKind ConditionValue,
                               SourceLocation IfLoc) {
   beginCallback("Elif");
+  appendArgument("HashLoc", HashLoc);
   appendArgument("Loc", Loc);
   appendArgument("ConditionRange", ConditionRange);
   appendArgument("ConditionValue", ConditionValue, ConditionValueKindStrings);
@@ -399,6 +417,7 @@ void PPCallbacksTracker::Ifdef(SourceLocation HashLoc, SourceLocation Loc,
                                const Token &MacroNameTok,
                                const MacroDefinition &MacroDefinition) {
   beginCallback("Ifdef");
+  appendArgument("HashLoc", HashLoc);
   appendArgument("Loc", Loc);
   appendArgument("MacroNameTok", MacroNameTok);
   appendArgument("MacroDefinition", MacroDefinition);
@@ -409,6 +428,7 @@ void PPCallbacksTracker::Ifndef(SourceLocation HashLoc, SourceLocation Loc,
                                 const Token &MacroNameTok,
                                 const MacroDefinition &MacroDefinition) {
   beginCallback("Ifndef");
+  appendArgument("HashLoc", HashLoc);
   appendArgument("Loc", Loc);
   appendArgument("MacroNameTok", MacroNameTok);
   appendArgument("MacroDefinition", MacroDefinition);
@@ -418,6 +438,7 @@ void PPCallbacksTracker::Ifndef(SourceLocation HashLoc, SourceLocation Loc,
 void PPCallbacksTracker::Else(SourceLocation HashLoc, SourceLocation Loc,
                               SourceLocation IfLoc) {
   beginCallback("Else");
+  appendArgument("HashLoc", HashLoc);
   appendArgument("Loc", Loc);
   appendArgument("IfLoc", IfLoc);
 }
@@ -426,6 +447,7 @@ void PPCallbacksTracker::Else(SourceLocation HashLoc, SourceLocation Loc,
 void PPCallbacksTracker::Endif(SourceLocation HashLoc, SourceLocation Loc,
                                SourceLocation IfLoc) {
   beginCallback("Endif");
+  appendArgument("HashLoc", HashLoc);
   appendArgument("Loc", Loc);
   appendArgument("IfLoc", IfLoc);
 }

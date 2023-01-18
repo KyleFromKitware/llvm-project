@@ -32,6 +32,7 @@ X
 // CHECK-NEXT:   MacroDirective: MD_Define
 // CHECK:      - Callback: MacroDefined
 // CHECK:      - Callback: MacroDefined
+// CHECK-NEXT:   HashLoc: "{{.*}}{{[/\\]}}pp-trace-macro.cpp:3:1"
 // CHECK-NEXT:   MacroNameTok: MACRO
 // CHECK-NEXT:   MacroDirective: MD_Define
 // CHECK-NEXT: - Callback: MacroExpands
@@ -44,13 +45,16 @@ X
 // CHECK-NEXT:   MacroDefinition: [(local)]
 // CHECK-NEXT:   Range: ["{{.*}}{{[/\\]}}pp-trace-macro.cpp:5:5", "{{.*}}{{[/\\]}}pp-trace-macro.cpp:5:19"]
 // CHECK-NEXT: - Callback: If
+// CHECK-NEXT:   HashLoc: "{{.*}}{{[/\\]}}pp-trace-macro.cpp:5:1"
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-macro.cpp:5:2"
 // CHECK-NEXT:   ConditionRange: ["{{.*}}{{[/\\]}}pp-trace-macro.cpp:5:5", "{{.*}}{{[/\\]}}pp-trace-macro.cpp:5:19"]
 // CHECK-NEXT:   ConditionValue: CVK_True
 // CHECK-NEXT: - Callback: Endif
+// CHECK-NEXT:   HashLoc: "{{.*}}{{[/\\]}}pp-trace-macro.cpp:6:1"
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-macro.cpp:6:2"
 // CHECK-NEXT:   IfLoc: "{{.*}}{{[/\\]}}pp-trace-macro.cpp:5:2"
 // CHECK-NEXT: - Callback: MacroUndefined
+// CHECK-NEXT:   HashLoc: "{{.*}}{{[/\\]}}pp-trace-macro.cpp:7:1"
 // CHECK-NEXT:   MacroNameTok: MACRO
 // CHECK-NEXT:   MacroDefinition: [(local)]
 // CHECK-NEXT: - Callback: Defined
@@ -58,15 +62,18 @@ X
 // CHECK-NEXT:   MacroDefinition: []
 // CHECK-NEXT:   Range: ["{{.*}}{{[/\\]}}pp-trace-macro.cpp:8:5", "{{.*}}{{[/\\]}}pp-trace-macro.cpp:8:19"]
 // CHECK-NEXT: - Callback: If
+// CHECK-NEXT:   HashLoc: "{{.*}}{{[/\\]}}pp-trace-macro.cpp:8:1"
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-macro.cpp:8:2"
 // CHECK-NEXT:   ConditionRange: ["{{.*}}{{[/\\]}}pp-trace-macro.cpp:8:5", "{{.*}}{{[/\\]}}pp-trace-macro.cpp:8:19"]
 // CHECK-NEXT:   ConditionValue: CVK_False
 // CHECK-NEXT: - Callback: Endif
+// CHECK-NEXT:   HashLoc: "{{.*}}{{[/\\]}}pp-trace-macro.cpp:9:1"
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-macro.cpp:9:2"
 // CHECK-NEXT:   IfLoc: "{{.*}}{{[/\\]}}pp-trace-macro.cpp:8:2"
 // CHECK-NEXT: - Callback: SourceRangeSkipped
 // CHECK-NEXT:   Range: ["{{.*}}{{[/\\]}}pp-trace-macro.cpp:8:1", "{{.*}}{{[/\\]}}pp-trace-macro.cpp:9:2"]
 // CHECK-NEXT: - Callback: MacroDefined
+// CHECK-NEXT:   HashLoc: "{{.*}}{{[/\\]}}pp-trace-macro.cpp:10:1"
 // CHECK-NEXT:   MacroNameTok: FUNCMACRO
 // CHECK-NEXT:   MacroDirective: MD_Define
 // CHECK-NEXT: - Callback: MacroExpands
@@ -75,12 +82,15 @@ X
 // CHECK-NEXT:   Range: ["{{.*}}{{[/\\]}}pp-trace-macro.cpp:11:9", "{{.*}}{{[/\\]}}pp-trace-macro.cpp:11:20"]
 // CHECK-NEXT:   Args: [1]
 // CHECK-NEXT: - Callback: MacroDefined
+// CHECK-NEXT:   HashLoc: "{{.*}}{{[/\\]}}pp-trace-macro.cpp:12:1"
 // CHECK-NEXT:   MacroNameTok: X
 // CHECK-NEXT:   MacroDirective: MD_Define
 // CHECK-NEXT: - Callback: MacroDefined
+// CHECK-NEXT:   HashLoc: "{{.*}}{{[/\\]}}pp-trace-macro.cpp:13:1"
 // CHECK-NEXT:   MacroNameTok: X_IMPL
 // CHECK-NEXT:   MacroDirective: MD_Define
 // CHECK-NEXT: - Callback: MacroDefined
+// CHECK-NEXT:   HashLoc: "{{.*}}{{[/\\]}}pp-trace-macro.cpp:14:1"
 // CHECK-NEXT:   MacroNameTok: X_IMPL2
 // CHECK-NEXT:   MacroDirective: MD_Define
 // CHECK-NEXT: - Callback: MacroExpands
