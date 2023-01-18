@@ -110,6 +110,11 @@ New checks
 
   Warns when lambda specify a capture default and capture ``this``.
 
+- New :doc:`readability-header-guard
+  <clang-tidy/checks/readability/header-guard>` check.
+
+  Finds header guards and corrects them if necessary.
+
 New check aliases
 ^^^^^^^^^^^^^^^^^
 
@@ -123,6 +128,11 @@ New check aliases
 
 Changes in existing checks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Deprecated :doc:`llvm-header-guard
+  <clang-tidy/checks/llvm/header-guard>` check. Use
+  :doc:`readability-header-guard
+  <clang-tidy/checks/readability/header-guard>` with the ``llvm`` style instead.
 
 Removed checks
 ^^^^^^^^^^^^^^

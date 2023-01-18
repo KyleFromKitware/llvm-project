@@ -5,6 +5,7 @@ set(LLVM_LINK_COMPONENTS
 
 add_clang_library(clangTidyLLVMModule
   HeaderGuardCheck.cpp
+  HeaderGuardStyle.cpp
   IncludeOrderCheck.cpp
   LLVMTidyModule.cpp
   PreferIsaOrDynCastInConditionalsCheck.cpp

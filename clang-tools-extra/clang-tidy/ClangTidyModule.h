@@ -10,6 +10,7 @@
 #define LLVM_CLANG_TOOLS_EXTRA_CLANG_TIDY_CLANGTIDYMODULE_H
 
 #include "ClangTidyOptions.h"
+#include "utils/HeaderGuardStyle.h"
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
 #include <functional>
@@ -88,6 +89,11 @@ public:
   /// Implement this function in order to register all \c CheckFactories
   /// belonging to this module.
   virtual void addCheckFactories(ClangTidyCheckFactories &CheckFactories) = 0;
+
+  /// Implement this function in order to register all \c StyleFactories
+  /// belonging to this module.
+  virtual void addHeaderGuardStyleFactories(
+      utils::HeaderGuardStyleFactories &StyleFactories){};
 
   /// Gets default options for checks defined in this module.
   virtual ClangTidyOptions getModuleOptions();

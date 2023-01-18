@@ -1,4 +1,4 @@
-//===--- HeaderGuardCheck.h - clang-tidy ------------------------*- C++ -*-===//
+//===--- HeaderGuardStyle.h - clang-tidy ------------------------*- C++ -*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -6,10 +6,10 @@
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef LLVM_CLANG_TOOLS_EXTRA_CLANG_TIDY_LLVM_HEADERGUARDCHECK_H
-#define LLVM_CLANG_TOOLS_EXTRA_CLANG_TIDY_LLVM_HEADERGUARDCHECK_H
+#ifndef LLVM_CLANG_TOOLS_EXTRA_CLANG_TIDY_LLVM_HEADERGUARDSTYLE_H
+#define LLVM_CLANG_TOOLS_EXTRA_CLANG_TIDY_LLVM_HEADERGUARDSTYLE_H
 
-#include "../readability/HeaderGuardCheck.h"
+#include "../utils/MacroHeaderGuardStyle.h"
 
 namespace clang::tidy::llvm_check {
 
@@ -23,15 +23,14 @@ namespace clang::tidy::llvm_check {
 ///
 ///     For extension-less header files, using an empty string or leaving an
 ///     empty string between ";" if there are other filename extensions.
-class LLVMHeaderGuardCheck : public readability::HeaderGuardCheck {
+class LLVMHeaderGuardStyle : public utils::MacroHeaderGuardStyle {
 public:
-  LLVMHeaderGuardCheck(StringRef Name, ClangTidyContext *Context);
-  void storeOptions(ClangTidyOptions::OptionMap &Opts) override;
+  LLVMHeaderGuardStyle(readability::HeaderGuardCheck *Check);
 
-protected:
-  std::unique_ptr<utils::HeaderGuardStyle> createHeaderGuardStyle() override;
+  bool shouldSuggestEndifComment(StringRef Filename) override { return false; }
+  std::string getHeaderGuard(StringRef Filename, StringRef OldGuard) override;
 };
 
 } // namespace clang::tidy::llvm_check
 
-#endif // LLVM_CLANG_TOOLS_EXTRA_CLANG_TIDY_LLVM_HEADERGUARDCHECK_H
+#endif // LLVM_CLANG_TOOLS_EXTRA_CLANG_TIDY_LLVM_HEADERGUARDSTYLE_H

@@ -16,6 +16,7 @@ add_clang_library(clangTidyReadabilityModule
   ElseAfterReturnCheck.cpp
   FunctionCognitiveComplexityCheck.cpp
   FunctionSizeCheck.cpp
+  HeaderGuardCheck.cpp
   IdentifierLengthCheck.cpp
   IdentifierNamingCheck.cpp
   ImplicitBoolConversionCheck.cpp

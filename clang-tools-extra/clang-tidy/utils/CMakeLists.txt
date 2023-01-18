@@ -11,10 +11,11 @@ add_clang_library(clangTidyUtils
   ExprSequence.cpp
   FileExtensionsUtils.cpp
   FixItHintUtils.cpp
-  HeaderGuard.cpp
+  HeaderGuardStyle.cpp
   IncludeInserter.cpp
   IncludeSorter.cpp
   LexerUtils.cpp
+  MacroHeaderGuardStyle.cpp
   NamespaceAliaser.cpp
   OptionsUtils.cpp
   RenamerClangTidyCheck.cpp

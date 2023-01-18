@@ -3,6 +3,7 @@
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/HeaderGuardCheck.h"
+#include "llvm/HeaderGuardStyle.h"
 #include "llvm/IncludeOrderCheck.h"
 #include "gtest/gtest.h"
 #include <optional>
@@ -49,10 +50,18 @@ runIncludeOrderCheck(StringRef Code, const Twine &Filename,
 }
 
 namespace {
+struct WithEndifCommentStyle : public LLVMHeaderGuardStyle {
+  WithEndifCommentStyle(readability::HeaderGuardCheck *Check)
+      : LLVMHeaderGuardStyle(Check) {}
+  bool shouldSuggestEndifComment(StringRef Filename) override { return true; }
+};
+
 struct WithEndifComment : public LLVMHeaderGuardCheck {
   WithEndifComment(StringRef Name, ClangTidyContext *Context)
       : LLVMHeaderGuardCheck(Name, Context) {}
-  bool shouldSuggestEndifComment(StringRef Filename) override { return true; }
+  std::unique_ptr<utils::HeaderGuardStyle> createHeaderGuardStyle() override {
+    return std::make_unique<WithEndifCommentStyle>(this);
+  }
 };
 
 static std::string

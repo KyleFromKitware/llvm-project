@@ -13,6 +13,7 @@
 #include "../readability/NamespaceCommentCheck.h"
 #include "../readability/QualifiedAutoCheck.h"
 #include "HeaderGuardCheck.h"
+#include "HeaderGuardStyle.h"
 #include "IncludeOrderCheck.h"
 #include "PreferIsaOrDynCastInConditionalsCheck.h"
 #include "PreferRegisterOverUnsignedCheck.h"
@@ -37,6 +38,11 @@ public:
     CheckFactories.registerCheck<readability::QualifiedAutoCheck>(
         "llvm-qualified-auto");
     CheckFactories.registerCheck<TwineLocalCheck>("llvm-twine-local");
+  }
+
+  void addHeaderGuardStyleFactories(
+      utils::HeaderGuardStyleFactories &StyleFactories) override {
+    StyleFactories.registerStyle<LLVMHeaderGuardStyle>("llvm");
   }
 
   ClangTidyOptions getModuleOptions() override {
