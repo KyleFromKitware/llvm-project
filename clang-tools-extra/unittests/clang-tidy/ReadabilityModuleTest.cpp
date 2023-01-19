@@ -1,6 +1,8 @@
 #include "ClangTidyTest.h"
 #include "readability/BracesAroundStatementsCheck.h"
+#include "readability/HeaderGuardCheck.h"
 #include "readability/NamespaceCommentCheck.h"
+#include "readability/PragmaOnceHeaderGuardStyle.h"
 #include "readability/SimplifyBooleanExprCheck.h"
 #include "gtest/gtest.h"
 
@@ -511,6 +513,97 @@ TEST(SimplifyBooleanExprCheckTest, CodeWithError) {
             runCheckOnCode<SimplifyBooleanExprCheck>(
                 "void foo(bool b){ if (b) return true; return false; }",
                 nullptr, "input.cc", {"-Wno-error=return-type"}));
+}
+
+namespace {
+struct UsePragmaOnceCheck : readability::HeaderGuardCheck {
+  UsePragmaOnceCheck(StringRef Name, ClangTidyContext *Context)
+      : HeaderGuardCheck(Name, Context) {}
+
+  std::unique_ptr<utils::HeaderGuardStyle> createHeaderGuardStyle() override {
+    return std::make_unique<readability::PragmaOnceHeaderGuardStyle>(this);
+  }
+};
+
+std::string runPragmaOnceCheck(StringRef Code, const Twine &Filename,
+                               std::optional<StringRef> ExpectedWarning,
+                               std::map<StringRef, StringRef> PathsToContent =
+                                   std::map<StringRef, StringRef>()) {
+  std::vector<ClangTidyError> Errors;
+  std::string Result = test::runCheckOnCode<UsePragmaOnceCheck>(
+      Code, &Errors, Filename, std::string("-xc++-header"), ClangTidyOptions{},
+      std::move(PathsToContent));
+  if (Errors.size() != (size_t)ExpectedWarning.has_value())
+    return "invalid error count";
+  if (ExpectedWarning && *ExpectedWarning != Errors.back().Message.Message)
+    return "expected: '" + ExpectedWarning->str() + "', saw: '" +
+           Errors.back().Message.Message + "'";
+  return Result;
+}
+} // namespace
+
+TEST(PragmaOnceHeaderGuardStyleTest, AddPragmaOnce) {
+  EXPECT_EQ("#pragma once\n"
+            "\n"
+            "void headerGuard();\n"
+            "\n",
+            runPragmaOnceCheck("#ifndef HEADER_GUARD_H\n"
+                               "#define HEADER_GUARD_H\n"
+                               "\n"
+                               "void headerGuard();\n"
+                               "\n"
+                               "#endif // HEADER_GUARD_H\n",
+                               "header-guard.h",
+                               StringRef("use #pragma once")));
+  EXPECT_EQ("#pragma once\n"
+            "\n"
+            "void headerGuardValue();\n"
+            "\n",
+            runPragmaOnceCheck("#ifndef HEADER_GUARD_VALUE_H\n"
+                               "#define HEADER_GUARD_VALUE_H \\\n"
+                               "1\n"
+                               "\n"
+                               "void headerGuardValue();\n"
+                               "\n"
+                               "#endif\n",
+                               "header-guard-value.h",
+                               StringRef("use #pragma once")));
+  EXPECT_EQ("#if !defined(DEFINED_HEADER_GUARD_H)\n"
+            "#define DEFINED_HEADER_GUARD_H\n"
+            "\n"
+            "void definedHeaderGuard();\n"
+            "\n"
+            "#endif\n",
+            runPragmaOnceCheck("#if !defined(DEFINED_HEADER_GUARD_H)\n"
+                               "#define DEFINED_HEADER_GUARD_H\n"
+                               "\n"
+                               "void definedHeaderGuard();\n"
+                               "\n"
+                               "#endif\n",
+                               "defined-header-guard.h", std::nullopt));
+  EXPECT_EQ("#pragma once\n"
+            "\n"
+            "void pragmaOnce();\n",
+            runPragmaOnceCheck("#pragma once\n"
+                               "\n"
+                               "void pragmaOnce();\n",
+                               "pragma-once.h", std::nullopt));
+  EXPECT_EQ("#pragma once\n"
+            "\n"
+            "void both();\n"
+            "\n",
+            runPragmaOnceCheck("#ifndef BOTH_H\n"
+                               "#define BOTH_H\n"
+                               "#pragma once\n"
+                               "\n"
+                               "void both();\n"
+                               "\n"
+                               "#endif // BOTH_H\n",
+                               "both.h", StringRef("use #pragma once")));
+  EXPECT_EQ("#pragma once\n"
+            "void neither();\n",
+            runPragmaOnceCheck("void neither();\n", "neither.h",
+                               StringRef("use #pragma once")));
 }
 
 } // namespace test

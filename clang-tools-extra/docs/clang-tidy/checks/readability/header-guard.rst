@@ -24,3 +24,8 @@ Options
    ``llvm``
 
      Use the LLVM header guard style.
+
+   ``pragma-once``
+
+     Use ``#pragma once`` instead of macro guards. Note that ``#pragma once``
+     is not portable and may not work correctly in all cases.

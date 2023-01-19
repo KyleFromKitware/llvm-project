@@ -33,6 +33,7 @@
 #include "MisplacedArrayIndexCheck.h"
 #include "NamedParameterCheck.h"
 #include "NonConstParameterCheck.h"
+#include "PragmaOnceHeaderGuardStyle.h"
 #include "QualifiedAutoCheck.h"
 #include "RedundantAccessSpecifiersCheck.h"
 #include "RedundantControlFlowCheck.h"
@@ -144,6 +145,11 @@ public:
         "readability-uppercase-literal-suffix");
     CheckFactories.registerCheck<UseAnyOfAllOfCheck>(
         "readability-use-anyofallof");
+  }
+
+  void addHeaderGuardStyleFactories(
+      utils::HeaderGuardStyleFactories &StyleFactories) override {
+    StyleFactories.registerStyle<PragmaOnceHeaderGuardStyle>("pragma-once");
   }
 };
 
