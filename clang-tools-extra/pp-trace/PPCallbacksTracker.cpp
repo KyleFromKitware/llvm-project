@@ -171,11 +171,9 @@ void PPCallbacksTracker::Ident(SourceLocation Loc, llvm::StringRef Str) {
 }
 
 // Callback invoked when start reading any pragma directive.
-void PPCallbacksTracker::PragmaDirective(SourceLocation Loc,
-                                         PragmaIntroducerKind Introducer) {
+void PPCallbacksTracker::PragmaDirective(PragmaIntroducer Introducer) {
   beginCallback("PragmaDirective");
-  appendArgument("Loc", Loc);
-  appendArgument("Introducer", Introducer, PragmaIntroducerKindStrings);
+  appendArgument("Introducer", Introducer);
 }
 
 // Callback invoked when a #pragma comment directive is read.
@@ -634,6 +632,21 @@ void PPCallbacksTracker::appendArgument(const char *Name, const Module *Value) {
     return;
   }
   appendArgument(Name, Value->Name.c_str());
+}
+
+// Append a PragmaIntroducer argument to the top trace item.
+void PPCallbacksTracker::appendArgument(const char *Name,
+                                        PragmaIntroducer Value) {
+  std::string Str;
+  llvm::raw_string_ostream SS(Str);
+
+  SS << "{Loc: ";
+  if (Value.Loc.isInvalid())
+    SS << "(invalid)";
+  else
+    SS << getSourceLocationString(PP, Value.Loc);
+  SS << ", Kind: " << PragmaIntroducerKindStrings[Value.Kind] << "}";
+  appendArgument(Name, SS.str());
 }
 
 // Append a double-quoted argument to the top trace item.

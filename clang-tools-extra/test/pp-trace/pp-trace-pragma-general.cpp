@@ -21,96 +21,83 @@ void foo() {
 
 // CHECK: ---
 // CHECK-NEXT: - Callback: PragmaDirective
-// CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:3:1"
-// CHECK-NEXT:   Introducer: PIK_HashPragma
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:3:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaDiagnosticPush
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:3:15"
 // CHECK-NEXT:   Namespace: clang
 // CHECK-NEXT: - Callback: PragmaDirective
-// CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:4:1"
-// CHECK-NEXT:   Introducer: PIK_HashPragma
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:4:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaDiagnosticPop
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:4:15"
 // CHECK-NEXT:   Namespace: clang
 // CHECK-NEXT: - Callback: PragmaDirective
-// CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:5:1"
-// CHECK-NEXT:   Introducer: PIK_HashPragma
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:5:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaDiagnostic
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:5:15"
 // CHECK-NEXT:   Namespace: clang
 // CHECK-NEXT:   Mapping: MAP_IGNORE
 // CHECK-NEXT:   Str: -Wformat
 // CHECK-NEXT: - Callback: PragmaDirective
-// CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:6:1"
-// CHECK-NEXT:   Introducer: PIK_HashPragma
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:6:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaDiagnostic
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:6:15"
 // CHECK-NEXT:   Namespace: clang
 // CHECK-NEXT:   Mapping: MAP_WARNING
 // CHECK-NEXT:   Str: -Wformat
 // CHECK-NEXT: - Callback: PragmaDirective
-// CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:7:1"
-// CHECK-NEXT:   Introducer: PIK_HashPragma
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:7:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaDiagnostic
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:7:15"
 // CHECK-NEXT:   Namespace: clang
 // CHECK-NEXT:   Mapping: MAP_ERROR
 // CHECK-NEXT:   Str: -Wformat
 // CHECK-NEXT: - Callback: PragmaDirective
-// CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:8:1"
-// CHECK-NEXT:   Introducer: PIK_HashPragma
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:8:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaDiagnostic
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:8:15"
 // CHECK-NEXT:   Namespace: clang
 // CHECK-NEXT:   Mapping: MAP_FATAL
 // CHECK-NEXT:   Str: -Wformat
 // CHECK-NEXT: - Callback: PragmaDirective
-// CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:10:1"
-// CHECK-NEXT:   Introducer: PIK_HashPragma
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:10:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaDiagnosticPush
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:10:13"
 // CHECK-NEXT:   Namespace: GCC
 // CHECK-NEXT: - Callback: PragmaDirective
-// CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:11:1"
-// CHECK-NEXT:   Introducer: PIK_HashPragma
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:11:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaDiagnosticPop
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:11:13"
 // CHECK-NEXT:   Namespace: GCC
 // CHECK-NEXT: - Callback: PragmaDirective
-// CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:12:1"
-// CHECK-NEXT:   Introducer: PIK_HashPragma
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:12:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaDiagnostic
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:12:13"
 // CHECK-NEXT:   Namespace: GCC
 // CHECK-NEXT:   Mapping: MAP_IGNORE
 // CHECK-NEXT:   Str: -Wformat
 // CHECK-NEXT: - Callback: PragmaDirective
-// CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:13:1"
-// CHECK-NEXT:   Introducer: PIK_HashPragma
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:13:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaDiagnostic
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:13:13"
 // CHECK-NEXT:   Namespace: GCC
 // CHECK-NEXT:   Mapping: MAP_WARNING
 // CHECK-NEXT:   Str: -Wformat
 // CHECK-NEXT: - Callback: PragmaDirective
-// CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:14:1"
-// CHECK-NEXT:   Introducer: PIK_HashPragma
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:14:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaDiagnostic
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:14:13"
 // CHECK-NEXT:   Namespace: GCC
 // CHECK-NEXT:   Mapping: MAP_ERROR
 // CHECK-NEXT:   Str: -Wformat
 // CHECK-NEXT: - Callback: PragmaDirective
-// CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:15:1"
-// CHECK-NEXT:   Introducer: PIK_HashPragma
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:15:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaDiagnostic
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:15:13"
 // CHECK-NEXT:   Namespace: GCC
 // CHECK-NEXT:   Mapping: MAP_FATAL
 // CHECK-NEXT:   Str: -Wformat
 // CHECK-NEXT: - Callback: PragmaDirective
-// CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:18:1"
-// CHECK-NEXT:   Introducer: PIK_HashPragma
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:18:1", Kind: PIK_HashPragma}
 // CHECK-NEXT: - Callback: PragmaDebug
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:18:23"
 // CHECK-NEXT:   DebugType: captured

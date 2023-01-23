@@ -78,7 +78,7 @@ private:
   // Just parse to the corresponding location to generate PPCallbacks for the
   // corresponding range
   void Ident(SourceLocation Loc, StringRef) override;
-  void PragmaDirective(SourceLocation Loc, PragmaIntroducerKind) override;
+  void PragmaDirective(PragmaIntroducer Introducer) override;
   void PragmaComment(SourceLocation Loc, const IdentifierInfo *,
                      StringRef) override;
   void PragmaDetectMismatch(SourceLocation Loc, StringRef, StringRef) override;
