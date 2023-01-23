@@ -193,9 +193,7 @@ public:
   }
 
   /// Callback invoked when start reading any pragma directive.
-  virtual void PragmaDirective(SourceLocation Loc,
-                               PragmaIntroducerKind Introducer) {
-  }
+  virtual void PragmaDirective(PragmaIntroducer Introducer) {}
 
   /// Callback invoked when a \#pragma comment directive is read.
   virtual void PragmaComment(SourceLocation Loc, const IdentifierInfo *Kind,
@@ -511,10 +509,9 @@ public:
     Second->Ident(Loc, str);
   }
 
-  void PragmaDirective(SourceLocation Loc,
-                       PragmaIntroducerKind Introducer) override {
-    First->PragmaDirective(Loc, Introducer);
-    Second->PragmaDirective(Loc, Introducer);
+  void PragmaDirective(PragmaIntroducer Introducer) override {
+    First->PragmaDirective(Introducer);
+    Second->PragmaDirective(Introducer);
   }
 
   void PragmaComment(SourceLocation Loc, const IdentifierInfo *Kind,

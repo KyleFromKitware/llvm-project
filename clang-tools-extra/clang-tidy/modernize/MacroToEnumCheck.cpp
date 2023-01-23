@@ -174,8 +174,7 @@ public:
     PPCallbacks::Elifndef(Loc, ConditionRange, IfLoc);
   }
   void Endif(SourceLocation Loc, SourceLocation IfLoc) override;
-  void PragmaDirective(SourceLocation Loc,
-                       PragmaIntroducerKind Introducer) override;
+  void PragmaDirective(PragmaIntroducer Introducer) override;
 
   // After we've seen everything, issue warnings and fix-its.
   void EndOfMainFile() override;
@@ -409,14 +408,13 @@ template <size_t N> size_t len(const char (&)[N]) { return N - 1; }
 
 } // namespace
 
-void MacroToEnumCallbacks::PragmaDirective(SourceLocation Loc,
-                                           PragmaIntroducerKind Introducer) {
+void MacroToEnumCallbacks::PragmaDirective(PragmaIntroducer Introducer) {
   if (CurrentFile->GuardScanner != IncludeGuard::FileChanged)
     return;
 
   bool Invalid = false;
   const char *Text = SM.getCharacterData(
-      Lexer::getLocForEndOfToken(Loc, 0, SM, LangOpts), &Invalid);
+      Lexer::getLocForEndOfToken(Introducer.Loc, 0, SM, LangOpts), &Invalid);
   if (Invalid)
     return;
 
