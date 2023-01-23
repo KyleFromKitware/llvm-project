@@ -185,9 +185,9 @@ void ExpandModularHeadersPPCallbacks::EndOfMainFile() {
 void ExpandModularHeadersPPCallbacks::Ident(SourceLocation Loc, StringRef) {
   parseToLocation(Loc);
 }
-void ExpandModularHeadersPPCallbacks::PragmaDirective(SourceLocation Loc,
-                                                      PragmaIntroducerKind) {
-  parseToLocation(Loc);
+void ExpandModularHeadersPPCallbacks::PragmaDirective(
+    PragmaIntroducer Introducer) {
+  parseToLocation(Introducer.Loc);
 }
 void ExpandModularHeadersPPCallbacks::PragmaComment(SourceLocation Loc,
                                                     const IdentifierInfo *,

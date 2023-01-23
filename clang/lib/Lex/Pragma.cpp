@@ -166,7 +166,7 @@ struct TokenCollector {
 /// rest of the pragma, passing it to the registered pragma handlers.
 void Preprocessor::HandlePragmaDirective(PragmaIntroducer Introducer) {
   if (Callbacks)
-    Callbacks->PragmaDirective(Introducer.Loc, Introducer.Kind);
+    Callbacks->PragmaDirective(Introducer);
 
   if (!PragmasEnabled)
     return;

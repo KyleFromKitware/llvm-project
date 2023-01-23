@@ -299,12 +299,11 @@ PragmaDirective is called when start reading any pragma directive.
 
 Argument descriptions:
 
-==============   ==================================================   ============================== =================================
-Argument Name    Argument Value Syntax                                Clang C++ Type                 Description
-==============   ==================================================   ============================== =================================
-Loc              "(file):(line):(col)"                                SourceLocation                 The location of the directive.
-Introducer       (PIK_HashPragma|PIK__Pragma|PIK___pragma)            PragmaIntroducerKind           The type of the pragma directive.
-==============   ==================================================   ============================== =================================
+==============   =============================================================================   ============================== ===============================================
+Argument Name    Argument Value Syntax                                                           Clang C++ Type                 Description
+==============   =============================================================================   ============================== ===============================================
+Introducer       {Loc: "(file):(line):(col)", Kind: (PIK_HashPragma|PIK__Pragma|PIK___pragma)}   PragmaIntroducer               The location and kind of the pragma introducer.
+==============   =============================================================================   ============================== ===============================================
 
 Example:::
 

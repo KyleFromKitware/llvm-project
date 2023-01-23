@@ -101,8 +101,7 @@ public:
                     const Module *Imported) override;
   void EndOfMainFile() override;
   void Ident(SourceLocation Loc, llvm::StringRef str) override;
-  void PragmaDirective(SourceLocation Loc,
-                       PragmaIntroducerKind Introducer) override;
+  void PragmaDirective(PragmaIntroducer Introducer) override;
   void PragmaComment(SourceLocation Loc, const IdentifierInfo *Kind,
                      llvm::StringRef Str) override;
   void PragmaDetectMismatch(SourceLocation Loc, llvm::StringRef Name,
@@ -207,6 +206,9 @@ public:
 
   /// Append a Module argument to the top trace item.
   void appendArgument(const char *Name, const Module *Value);
+
+  // Append a PragmaIntroducer argument to the top trace item.
+  void appendArgument(const char *Name, PragmaIntroducer Introducer);
 
   /// Append a double-quoted argument to the top trace item.
   void appendQuotedArgument(const char *Name, const std::string &Value);
