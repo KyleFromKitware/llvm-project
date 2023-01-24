@@ -305,6 +305,9 @@ public:
   virtual void PragmaAssumeNonNullEnd(PragmaIntroducer Introducer,
                                       SourceLocation Loc) {}
 
+  /// Callback invoked when a \#pragma once directive is read.
+  virtual void PragmaOnce(PragmaIntroducer Introducer, SourceLocation Loc) {}
+
   /// Called by Preprocessor::HandleMacroExpandedIdentifier when a
   /// macro invocation is found.
   virtual void MacroExpands(const Token &MacroNameTok,
@@ -625,6 +628,11 @@ public:
                               SourceLocation Loc) override {
     First->PragmaAssumeNonNullEnd(Introducer, Loc);
     Second->PragmaAssumeNonNullEnd(Introducer, Loc);
+  }
+
+  void PragmaOnce(PragmaIntroducer Introducer, SourceLocation Loc) override {
+    First->PragmaOnce(Introducer, Loc);
+    Second->PragmaOnce(Introducer, Loc);
   }
 
   void MacroExpands(const Token &MacroNameTok, const MacroDefinition &MD,

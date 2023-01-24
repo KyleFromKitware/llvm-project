@@ -2615,7 +2615,7 @@ private:
   void HandlePragmaDirective(PragmaIntroducer Introducer);
 
 public:
-  void HandlePragmaOnce(Token &OnceTok);
+  void HandlePragmaOnce(PragmaIntroducer Introducer, Token &OnceTok);
   void HandlePragmaMark(PragmaIntroducer Introducer, Token &MarkTok);
   void HandlePragmaPoison();
   void HandlePragmaSystemHeader(Token &SysHeaderTok);
