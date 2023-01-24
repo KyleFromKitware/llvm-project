@@ -135,6 +135,7 @@ public:
                              StringRef Str) override;
   void PragmaExecCharsetPop(PragmaIntroducer Introducer,
                             SourceLocation Loc) override;
+  void PragmaOnce(PragmaIntroducer Introducer, SourceLocation Loc) override;
   void MacroExpands(const Token &MacroNameTok, const MacroDefinition &MD,
                     SourceRange Range, const MacroArgs *Args) override;
   void MacroDefined(SourceLocation HashLoc, const Token &MacroNameTok,

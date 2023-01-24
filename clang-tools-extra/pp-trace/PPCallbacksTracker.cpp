@@ -337,6 +337,14 @@ void PPCallbacksTracker::PragmaExecCharsetPop(PragmaIntroducer Introducer,
   appendArgument("Loc", Loc);
 }
 
+/// Callback invoked when a \#pragma once directive is read.
+void PPCallbacksTracker::PragmaOnce(PragmaIntroducer Introducer,
+                                    SourceLocation Loc) {
+  beginCallback("PragmaOnce");
+  appendArgument("Introducer", Introducer);
+  appendArgument("Loc", Loc);
+}
+
 // Called by Preprocessor::HandleMacroExpandedIdentifier when a
 // macro invocation is found.
 void PPCallbacksTracker::MacroExpands(const Token &MacroNameTok,
