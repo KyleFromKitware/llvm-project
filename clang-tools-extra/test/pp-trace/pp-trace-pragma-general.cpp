@@ -1,4 +1,4 @@
-// RUN: pp-trace -callbacks '*,-FileChanged,-MacroDefined' %s -- | FileCheck --strict-whitespace %s
+// RUN: pp-trace -callbacks '*,-FileChanged,-MacroDefined' -extra-arg-before=-xc++-header %s -- | FileCheck --strict-whitespace %s
 
 #pragma clang diagnostic push
 #pragma clang diagnostic pop
@@ -18,6 +18,8 @@ void foo() {
 #pragma clang __debug captured
 { }
 }
+
+#pragma once
 
 // CHECK: ---
 // CHECK-NEXT: - Callback: PragmaDirective
@@ -114,5 +116,10 @@ void foo() {
 // CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:18:1", Kind: PIK_HashPragma}
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:18:23"
 // CHECK-NEXT:   DebugType: captured
+// CHECK-NEXT: - Callback: PragmaDirective
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:22:1", Kind: PIK_HashPragma}
+// CHECK-NEXT: - Callback: PragmaOnce
+// CHECK-NEXT:   Introducer: {Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:22:1", Kind: PIK_HashPragma}
+// CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-general.cpp:22:9"
 // CHECK-NEXT: - Callback: EndOfMainFile
 // CHECK-NEXT: ...
