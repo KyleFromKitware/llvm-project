@@ -403,7 +403,8 @@ void Preprocessor::HandleMicrosoft__pragma(Token &Tok) {
 }
 
 /// HandlePragmaOnce - Handle \#pragma once.  OnceTok is the 'once'.
-void Preprocessor::HandlePragmaOnce(Token &OnceTok) {
+void Preprocessor::HandlePragmaOnce(PragmaIntroducer Introducer,
+                                    Token &OnceTok) {
   // Don't honor the 'once' when handling the primary source file, unless
   // this is a prefix to a TU, which indicates we're generating a PCH file, or
   // when the main file is a header (e.g. when -xc-header is provided on the
@@ -416,6 +417,9 @@ void Preprocessor::HandlePragmaOnce(Token &OnceTok) {
   // Get the current file lexer we're looking at.  Ignore _Pragma 'files' etc.
   // Mark the file as a once-only file now.
   HeaderInfo.MarkFileIncludeOnce(getCurrentFileLexer()->getFileEntry());
+
+  if (Callbacks)
+    Callbacks->PragmaOnce(Introducer, OnceTok.getLocation());
 }
 
 void Preprocessor::HandlePragmaMark(PragmaIntroducer Introducer,
@@ -991,7 +995,7 @@ struct PragmaOnceHandler : public PragmaHandler {
   void HandlePragma(Preprocessor &PP, PragmaIntroducer Introducer,
                     Token &OnceTok) override {
     PP.CheckEndOfDirective("pragma once");
-    PP.HandlePragmaOnce(OnceTok);
+    PP.HandlePragmaOnce(Introducer, OnceTok);
   }
 };
 
