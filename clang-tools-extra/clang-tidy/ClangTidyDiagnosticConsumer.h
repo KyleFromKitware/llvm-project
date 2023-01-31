@@ -40,6 +40,7 @@ struct ClangTidyError : tooling::Diagnostic {
 
   bool IsWarningAsError;
   std::vector<std::string> EnabledDiagnosticAliases;
+  llvm::StringMap<tooling::Replacements> NoLintReplacements;
 };
 
 /// Contains displayed and ignored diagnostic counters for a ClangTidy run.
@@ -240,12 +241,22 @@ private:
   llvm::StringSet<> *OptionsCollector = nullptr;
 };
 
-/// Gets the Fix attached to \p Diagnostic.
+/// Controls how clang-tidy applies fixes.
+enum FixType {
+  /// Only apply fix-its.
+  FT_FixIt,
+  /// Only add NOLINT lines.
+  FT_NoLint,
+  /// Add NOLINT if fix-it is not available.
+  FT_FixItOrNoLint
+};
+
+/// Gets the Fix attached to \p ClangTidyError.
 /// If there isn't a Fix attached to the diagnostic and \p AnyFix is true, Check
 /// to see if exactly one note has a Fix and return it. Otherwise return
 /// nullptr.
-const llvm::StringMap<tooling::Replacements> *
-getFixIt(const tooling::Diagnostic &Diagnostic, bool AnyFix);
+std::pair<const llvm::StringMap<tooling::Replacements> *, FixType>
+getFixIt(const ClangTidyError &Error, FixType Type, bool AnyFix);
 
 /// A diagnostic consumer that turns each \c Diagnostic into a
 /// \c SourceManager-independent \c ClangTidyError.
@@ -259,6 +270,8 @@ public:
                               DiagnosticsEngine *ExternalDiagEngine = nullptr,
                               bool RemoveIncompatibleErrors = true,
                               bool GetFixesFromNotes = false,
+                              FixType Type = FT_FixIt,
+                              StringRef NoLintPrefix = "",
                               bool EnableNolintBlocks = true);
 
   // FIXME: The concept of converting between FixItHints and Replacements is
@@ -290,6 +303,8 @@ private:
   DiagnosticsEngine *ExternalDiagEngine;
   bool RemoveIncompatibleErrors;
   bool GetFixesFromNotes;
+  FixType Type;
+  StringRef NoLintPrefix;
   bool EnableNolintBlocks;
   std::vector<ClangTidyError> Errors;
   std::unique_ptr<llvm::Regex> HeaderFilter;

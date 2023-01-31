@@ -180,6 +180,7 @@ def err_verify_nonconst_addrspace : Error<
   "qualifier 'const' is needed for variables in address space '%0'">;
 
 def note_fixit_applied : Note<"FIX-IT applied suggested code changes">;
+def note_fixit_added_nolint : Note<"FIX-IT added NOLINT to suppress warning">;
 def note_fixit_in_macro : Note<
     "FIX-IT unable to apply suggested code changes in a macro">;
 def note_fixit_failed : Note<

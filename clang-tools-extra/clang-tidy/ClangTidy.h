@@ -88,7 +88,8 @@ runClangTidy(clang::tidy::ClangTidyContext &Context,
              const tooling::CompilationDatabase &Compilations,
              ArrayRef<std::string> InputFiles,
              llvm::IntrusiveRefCntPtr<llvm::vfs::OverlayFileSystem> BaseFS,
-             bool ApplyAnyFix, bool EnableCheckProfile = false,
+             bool ApplyAnyFix, FixType Type, StringRef NoLintPrefix,
+             bool EnableCheckProfile = false,
              llvm::StringRef StoreCheckProfile = StringRef());
 
 /// Controls what kind of fixes clang-tidy is allowed to apply.
@@ -109,7 +110,7 @@ enum FixBehaviour {
 /// reformatted. If no clang-format configuration file is found, the given \P
 /// FormatStyle is used.
 void handleErrors(llvm::ArrayRef<ClangTidyError> Errors,
-                  ClangTidyContext &Context, FixBehaviour Fix,
+                  ClangTidyContext &Context, FixBehaviour Fix, FixType Type,
                   unsigned &WarningsAsErrorsCount,
                   llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> BaseFS);
 
@@ -117,7 +118,7 @@ void handleErrors(llvm::ArrayRef<ClangTidyError> Errors,
 /// output stream.
 void exportReplacements(StringRef MainFilePath,
                         const std::vector<ClangTidyError> &Errors,
-                        raw_ostream &OS);
+                        raw_ostream &OS, FixType Type);
 
 } // end namespace tidy
 } // end namespace clang

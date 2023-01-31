@@ -41,6 +41,7 @@
 #include "clang/Tooling/Tooling.h"
 #include "llvm/Support/Process.h"
 #include <algorithm>
+#include <tuple>
 #include <utility>
 
 #if CLANG_TIDY_ENABLE_STATIC_ANALYZER
@@ -95,6 +96,7 @@ private:
 class ErrorReporter {
 public:
   ErrorReporter(ClangTidyContext &Context, FixBehaviour ApplyFixes,
+                FixType Type,
                 llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> BaseFS)
       : Files(FileSystemOptions(), std::move(BaseFS)),
         DiagOpts(new DiagnosticOptions()),
@@ -102,7 +104,7 @@ public:
         Diags(IntrusiveRefCntPtr<DiagnosticIDs>(new DiagnosticIDs), &*DiagOpts,
               DiagPrinter),
         SourceMgr(Diags, Files), Context(Context), ApplyFixes(ApplyFixes),
-        TotalFixes(0), AppliedFixes(0), WarningsAsErrors(0) {
+        Type(Type), TotalFixes(0), AppliedFixes(0), WarningsAsErrors(0) {
     DiagOpts->ShowColors = Context.getOptions().UseColor.value_or(
         llvm::sys::Process::StandardOutHasColors());
     DiagPrinter->BeginSourceFile(LangOpts);
@@ -118,7 +120,7 @@ public:
     SourceLocation Loc = getLocation(Message.FilePath, Message.FileOffset);
     // Contains a pair for each attempted fix: location and whether the fix was
     // applied successfully.
-    SmallVector<std::pair<SourceLocation, bool>, 4> FixLocations;
+    SmallVector<std::tuple<SourceLocation, FixType, bool>, 4> FixLocations;
     {
       auto Level = static_cast<DiagnosticsEngine::Level>(Error.DiagLevel);
       std::string Name = Error.DiagnosticName;
@@ -134,10 +136,11 @@ public:
       for (const FileByteRange &FBR : Error.Message.Ranges)
         Diag << getRange(FBR);
       // FIXME: explore options to support interactive fix selection.
-      const llvm::StringMap<Replacements> *ChosenFix;
+      std::pair<const llvm::StringMap<Replacements> *, FixType> ChosenFix;
       if (ApplyFixes != FB_NoFix &&
-          (ChosenFix = getFixIt(Error, ApplyFixes == FB_FixNotes))) {
-        for (const auto &FileAndReplacements : *ChosenFix) {
+          std::get<0>(ChosenFix =
+                          getFixIt(Error, Type, ApplyFixes == FB_FixNotes))) {
+        for (const auto &FileAndReplacements : *std::get<0>(ChosenFix)) {
           for (const auto &Repl : FileAndReplacements.second) {
             ++TotalFixes;
             bool CanBeApplied = false;
@@ -174,14 +177,18 @@ public:
               ++AppliedFixes;
             }
             FixLoc = getLocation(FixAbsoluteFilePath, Repl.getOffset());
-            FixLocations.push_back(std::make_pair(FixLoc, CanBeApplied));
+            FixLocations.emplace_back(FixLoc, std::get<1>(ChosenFix),
+                                      CanBeApplied);
           }
         }
       }
       reportFix(Diag, Error.Message.Fix);
     }
     for (auto Fix : FixLocations) {
-      Diags.Report(Fix.first, Fix.second ? diag::note_fixit_applied
+      Diags.Report(std::get<0>(Fix), std::get<2>(Fix)
+                                         ? (std::get<1>(Fix) == FT_FixIt
+                                                ? diag::note_fixit_applied
+                                                : diag::note_fixit_added_nolint)
                                          : diag::note_fixit_failed);
     }
     for (const auto &Note : Error.Notes)
@@ -299,6 +306,7 @@ private:
   llvm::StringMap<Replacements> FileReplacements;
   ClangTidyContext &Context;
   FixBehaviour ApplyFixes;
+  FixType Type;
   unsigned TotalFixes;
   unsigned AppliedFixes;
   unsigned WarningsAsErrors;
@@ -507,8 +515,8 @@ runClangTidy(clang::tidy::ClangTidyContext &Context,
              const CompilationDatabase &Compilations,
              ArrayRef<std::string> InputFiles,
              llvm::IntrusiveRefCntPtr<llvm::vfs::OverlayFileSystem> BaseFS,
-             bool ApplyAnyFix, bool EnableCheckProfile,
-             llvm::StringRef StoreCheckProfile) {
+             bool ApplyAnyFix, FixType Type, StringRef NoLintPrefix,
+             bool EnableCheckProfile, llvm::StringRef StoreCheckProfile) {
   ClangTool Tool(Compilations, InputFiles,
                  std::make_shared<PCHContainerOperations>(), BaseFS);
 
@@ -535,7 +543,8 @@ runClangTidy(clang::tidy::ClangTidyContext &Context,
   Context.setEnableProfiling(EnableCheckProfile);
   Context.setProfileStoragePrefix(StoreCheckProfile);
 
-  ClangTidyDiagnosticConsumer DiagConsumer(Context, nullptr, true, ApplyAnyFix);
+  ClangTidyDiagnosticConsumer DiagConsumer(Context, nullptr, true, ApplyAnyFix,
+                                           Type, NoLintPrefix);
   DiagnosticsEngine DE(new DiagnosticIDs(), new DiagnosticOptions(),
                        &DiagConsumer, /*ShouldOwnClient=*/false);
   Context.setDiagnosticsEngine(&DE);
@@ -582,10 +591,10 @@ runClangTidy(clang::tidy::ClangTidyContext &Context,
 }
 
 void handleErrors(llvm::ArrayRef<ClangTidyError> Errors,
-                  ClangTidyContext &Context, FixBehaviour Fix,
+                  ClangTidyContext &Context, FixBehaviour Fix, FixType Type,
                   unsigned &WarningsAsErrorsCount,
                   llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> BaseFS) {
-  ErrorReporter Reporter(Context, Fix, std::move(BaseFS));
+  ErrorReporter Reporter(Context, Fix, Type, std::move(BaseFS));
   llvm::vfs::FileSystem &FileSystem =
       Reporter.getSourceManager().getFileManager().getVirtualFileSystem();
   auto InitialWorkingDir = FileSystem.getCurrentWorkingDirectory();
@@ -610,11 +619,14 @@ void handleErrors(llvm::ArrayRef<ClangTidyError> Errors,
 
 void exportReplacements(const llvm::StringRef MainFilePath,
                         const std::vector<ClangTidyError> &Errors,
-                        raw_ostream &OS) {
+                        raw_ostream &OS, FixType Type) {
   TranslationUnitDiagnostics TUD;
   TUD.MainSourceFile = std::string(MainFilePath);
   for (const auto &Error : Errors) {
     tooling::Diagnostic Diag = Error;
+    if (Type == FT_NoLint ||
+        (Type == FT_FixItOrNoLint && Error.Message.Fix.empty()))
+      Diag.Message.Fix = Error.NoLintReplacements;
     TUD.Diagnostics.insert(TUD.Diagnostics.end(), Diag);
   }
 

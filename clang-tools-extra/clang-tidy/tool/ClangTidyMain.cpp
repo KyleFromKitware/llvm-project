@@ -138,6 +138,25 @@ Specifying this flag will implicitly enable the
 )"),
                               cl::init(false), cl::cat(ClangTidyCategory));
 
+static cl::opt<std::string> FixMode("fix-mode", cl::desc(R"(
+How to fix warnings:
+  - 'fixit' (default) applies fix-it if available
+  - 'nolint' adds a NOLINT comment to suppress the
+    warning, prefixed with the value of the
+    --nolint-prefix argument
+  - 'fixit-or-nolint' applies fix-it if available,
+    otherwise adds a NOLINT comment like the 'nolint'
+    option
+)"),
+                                    cl::init("fixit"),
+                                    cl::cat(ClangTidyCategory));
+
+static cl::opt<std::string> NoLintPrefix("nolint-prefix", cl::desc(R"(
+Prefix to be added to NOLINT comments.
+)"),
+                                         cl::init(""),
+                                         cl::cat(ClangTidyCategory));
+
 static cl::opt<std::string> FormatStyle("format-style", cl::desc(R"(
 Style for formatting code around applied fixes:
   - 'none' (default) turns off formatting
@@ -473,6 +492,19 @@ int clangTidyMain(int argc, const char **argv) {
     return 1;
   }
 
+  FixType Type = FT_FixIt;
+  if (FixMode.getValue() == "fixit")
+    Type = FT_FixIt;
+  else if (FixMode.getValue() == "nolint")
+    Type = FT_NoLint;
+  else if (FixMode.getValue() == "fixit-or-nolint")
+    Type = FT_FixItOrNoLint;
+  else {
+    llvm::WithColor::error()
+        << "invalid value for --fix-type: '" << FixMode.getValue() << "'\n";
+    return 1;
+  }
+
   llvm::IntrusiveRefCntPtr<vfs::OverlayFileSystem> BaseFS(
       new vfs::OverlayFileSystem(vfs::getRealFileSystem()));
 
@@ -597,9 +629,9 @@ int clangTidyMain(int argc, const char **argv) {
 
   ClangTidyContext Context(std::move(OwningOptionsProvider),
                            AllowEnablingAnalyzerAlphaCheckers);
-  std::vector<ClangTidyError> Errors =
-      runClangTidy(Context, OptionsParser->getCompilations(), PathList, BaseFS,
-                   FixNotes, EnableCheckProfile, ProfilePrefix);
+  std::vector<ClangTidyError> Errors = runClangTidy(
+      Context, OptionsParser->getCompilations(), PathList, BaseFS, FixNotes,
+      Type, NoLintPrefix.getValue(), EnableCheckProfile, ProfilePrefix);
   bool FoundErrors = llvm::any_of(Errors, [](const ClangTidyError &E) {
     return E.DiagLevel == ClangTidyError::Error;
   });
@@ -613,7 +645,7 @@ int clangTidyMain(int argc, const char **argv) {
 
   unsigned WErrorCount = 0;
 
-  handleErrors(Errors, Context, DisableFixes ? FB_NoFix : Behaviour,
+  handleErrors(Errors, Context, DisableFixes ? FB_NoFix : Behaviour, Type,
                WErrorCount, BaseFS);
 
   if (!ExportFixes.empty() && !Errors.empty()) {
@@ -623,7 +655,7 @@ int clangTidyMain(int argc, const char **argv) {
       llvm::errs() << "Error opening output file: " << EC.message() << '\n';
       return 1;
     }
-    exportReplacements(FilePath.str(), Errors, OS);
+    exportReplacements(FilePath.str(), Errors, OS, Type);
   }
 
   if (!Quiet) {

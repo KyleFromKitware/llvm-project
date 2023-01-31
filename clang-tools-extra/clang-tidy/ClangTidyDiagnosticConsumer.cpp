@@ -22,6 +22,7 @@
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/ASTDiagnostic.h"
 #include "clang/AST/Attr.h"
+#include "clang/Basic/CharInfo.h"
 #include "clang/Basic/Diagnostic.h"
 #include "clang/Basic/DiagnosticOptions.h"
 #include "clang/Basic/FileManager.h"
@@ -44,12 +45,29 @@ using namespace clang;
 using namespace tidy;
 
 namespace {
+void computeNoLintReplacements(FullSourceLoc Loc, ClangTidyError &Error,
+                               StringRef NoLintPrefix) {
+  if (!Loc.isValid())
+    return;
+
+  StringRef Buf = Loc.getBufferData();
+  const char *Begin = Lexer::findBeginningOfLine(Buf, Error.Message.FileOffset);
+  tooling::Replacement Repl(
+      Error.Message.FilePath, Begin - Buf.data(), 0,
+      (Lexer::getIndentationForLine(Loc, Loc.getManager()) + "/* " +
+       NoLintPrefix + "NOLINTNEXTLINE(" + Error.DiagnosticName + ") */\n")
+          .str());
+  auto Err = Error.NoLintReplacements[Error.Message.FilePath].add(Repl);
+  assert(!Err);
+}
+
 class ClangTidyDiagnosticRenderer : public DiagnosticRenderer {
 public:
   ClangTidyDiagnosticRenderer(const LangOptions &LangOpts,
                               DiagnosticOptions *DiagOpts,
-                              ClangTidyError &Error)
-      : DiagnosticRenderer(LangOpts, DiagOpts), Error(Error) {}
+                              ClangTidyError &Error, StringRef NoLintPrefix)
+      : DiagnosticRenderer(LangOpts, DiagOpts), Error(Error),
+        NoLintPrefix(NoLintPrefix) {}
 
 protected:
   void emitDiagnosticMessage(FullSourceLoc Loc, PresumedLoc PLoc,
@@ -100,6 +118,7 @@ protected:
     for (const CharSourceRange &SourceRange : ValidRanges)
       Error.Message.Ranges.emplace_back(Loc.getManager(),
                                         ToCharRange(SourceRange));
+    computeNoLintReplacements(Loc, Error, NoLintPrefix);
   }
 
   void emitDiagnosticLoc(FullSourceLoc Loc, PresumedLoc PLoc,
@@ -149,6 +168,7 @@ protected:
 
 private:
   ClangTidyError &Error;
+  StringRef NoLintPrefix;
 };
 } // end anonymous namespace
 
@@ -288,13 +308,14 @@ std::string ClangTidyContext::getCheckName(unsigned DiagnosticID) const {
 
 ClangTidyDiagnosticConsumer::ClangTidyDiagnosticConsumer(
     ClangTidyContext &Ctx, DiagnosticsEngine *ExternalDiagEngine,
-    bool RemoveIncompatibleErrors, bool GetFixesFromNotes,
-    bool EnableNolintBlocks)
+    bool RemoveIncompatibleErrors, bool GetFixesFromNotes, FixType Type,
+    StringRef NoLintPrefix, bool EnableNolintBlocks)
     : Context(Ctx), ExternalDiagEngine(ExternalDiagEngine),
       RemoveIncompatibleErrors(RemoveIncompatibleErrors),
-      GetFixesFromNotes(GetFixesFromNotes),
-      EnableNolintBlocks(EnableNolintBlocks), LastErrorRelatesToUserCode(false),
-      LastErrorPassesLineFilter(false), LastErrorWasIgnored(false) {}
+      GetFixesFromNotes(GetFixesFromNotes), Type(Type),
+      NoLintPrefix(NoLintPrefix), EnableNolintBlocks(EnableNolintBlocks),
+      LastErrorRelatesToUserCode(false), LastErrorPassesLineFilter(false),
+      LastErrorWasIgnored(false) {}
 
 void ClangTidyDiagnosticConsumer::finalizeLastError() {
   if (!Errors.empty()) {
@@ -321,22 +342,37 @@ void ClangTidyDiagnosticConsumer::finalizeLastError() {
 
 namespace clang::tidy {
 
-const llvm::StringMap<tooling::Replacements> *
-getFixIt(const tooling::Diagnostic &Diagnostic, bool GetFixFromNotes) {
-  if (!Diagnostic.Message.Fix.empty())
-    return &Diagnostic.Message.Fix;
-  if (!GetFixFromNotes)
-    return nullptr;
+std::pair<const llvm::StringMap<tooling::Replacements> *, FixType>
+getFixIt(const ClangTidyError &Error, FixType Type, bool GetFixFromNotes) {
   const llvm::StringMap<tooling::Replacements> *Result = nullptr;
-  for (const auto &Note : Diagnostic.Notes) {
-    if (!Note.Fix.empty()) {
-      if (Result)
-        // We have 2 different fixes in notes, bail out.
+  FixType AppliedType = FT_FixIt;
+  if (Type == FT_FixIt || Type == FT_FixItOrNoLint) {
+    auto GetFix =
+        [&Error,
+         GetFixFromNotes]() -> const llvm::StringMap<tooling::Replacements> * {
+      if (!Error.Message.Fix.empty())
+        return &Error.Message.Fix;
+      if (!GetFixFromNotes)
         return nullptr;
-      Result = &Note.Fix;
-    }
+      const llvm::StringMap<tooling::Replacements> *Result = nullptr;
+      for (const auto &Note : Error.Notes) {
+        if (!Note.Fix.empty()) {
+          if (Result)
+            // We have 2 different fixes in notes, bail out.
+            return nullptr;
+          Result = &Note.Fix;
+        }
+      }
+      return Result;
+    };
+    Result = GetFix();
+    AppliedType = FT_FixIt;
   }
-  return Result;
+  if ((Type == FT_NoLint || Type == FT_FixItOrNoLint) && !Result) {
+    Result = &Error.NoLintReplacements;
+    AppliedType = FT_NoLint;
+  }
+  return std::make_pair(Result, AppliedType);
 }
 
 } // namespace clang::tidy
@@ -415,7 +451,7 @@ void ClangTidyDiagnosticConsumer::HandleDiagnostic(
   } else {
     ClangTidyDiagnosticRenderer Converter(
         Context.getLangOpts(), &Context.DiagEngine->getDiagnosticOptions(),
-        Errors.back());
+        Errors.back(), NoLintPrefix);
     SmallString<100> Message;
     Info.FormatDiagnostic(Message);
     FullSourceLoc Loc;
@@ -639,9 +675,11 @@ void ClangTidyDiagnosticConsumer::removeIncompatibleErrors() {
       std::pair<ClangTidyError *, llvm::StringMap<tooling::Replacements> *>>
       ErrorFixes;
   for (auto &Error : Errors) {
-    if (const auto *Fix = getFixIt(Error, GetFixesFromNotes))
+    const auto Fix = getFixIt(Error, Type, GetFixesFromNotes);
+    if (Fix.first)
       ErrorFixes.emplace_back(
-          &Error, const_cast<llvm::StringMap<tooling::Replacements> *>(Fix));
+          &Error,
+          const_cast<llvm::StringMap<tooling::Replacements> *>(Fix.first));
   }
   for (const auto &ErrorAndFix : ErrorFixes) {
     int Size = 0;
