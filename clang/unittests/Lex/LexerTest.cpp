@@ -660,4 +660,21 @@ TEST_F(LexerTest, RawAndNormalLexSameForLineComments) {
   }
   EXPECT_TRUE(ToksView.empty());
 }
+
+TEST_F(LexerTest, FindBeginningOfLine) {
+  auto FindBeginningOfLineOffset = [](StringRef Buffer,
+                                      unsigned int Offset) -> int {
+    return Lexer::findBeginningOfLine(Buffer, Offset) - Buffer.data();
+  };
+
+  EXPECT_EQ(FindBeginningOfLineOffset("int func();", 3), 0);
+  EXPECT_EQ(FindBeginningOfLineOffset("int func();", 0), 0);
+  EXPECT_EQ(FindBeginningOfLineOffset("int func1();\nint func2();", 13), 13);
+  EXPECT_EQ(FindBeginningOfLineOffset("int func1();\nint func2();", 12), 13);
+  EXPECT_EQ(FindBeginningOfLineOffset("int func1();\nint func2();", 11), 0);
+  EXPECT_EQ(FindBeginningOfLineOffset("int func1();\\\nint func2();", 14), 0);
+  EXPECT_EQ(FindBeginningOfLineOffset("int func1();\r\nint func2();", 13), 14);
+  EXPECT_EQ(FindBeginningOfLineOffset("\nint func();", 4), 1);
+  EXPECT_EQ(FindBeginningOfLineOffset("\\\nint func();", 5), 0);
+}
 } // anonymous namespace

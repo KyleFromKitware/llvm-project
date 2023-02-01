@@ -492,19 +492,22 @@ bool Lexer::getRawToken(SourceLocation Loc, Token &Result,
 
 /// Returns the pointer that points to the beginning of line that contains
 /// the given offset, or null if the offset if invalid.
-static const char *findBeginningOfLine(StringRef Buffer, unsigned Offset) {
+const char *Lexer::findBeginningOfLine(StringRef Buffer, unsigned Offset) {
   const char *BufStart = Buffer.data();
   if (Offset >= Buffer.size())
     return nullptr;
 
   const char *LexStart = BufStart + Offset;
-  for (; LexStart != BufStart; --LexStart) {
+  while (true) {
     if (isVerticalWhitespace(LexStart[0]) &&
         !Lexer::isNewLineEscaped(BufStart, LexStart)) {
       // LexStart should point at first character of logical line.
       ++LexStart;
       break;
     }
+    if (LexStart == BufStart)
+      break;
+    --LexStart;
   }
   return LexStart;
 }
@@ -525,7 +528,7 @@ static SourceLocation getBeginningOfFileToken(SourceLocation Loc,
   // Back up from the current location until we hit the beginning of a line
   // (or the buffer). We'll relex from that point.
   const char *StrData = Buffer.data() + LocInfo.second;
-  const char *LexStart = findBeginningOfLine(Buffer, LocInfo.second);
+  const char *LexStart = Lexer::findBeginningOfLine(Buffer, LocInfo.second);
   if (!LexStart || LexStart == StrData)
     return Loc;
 

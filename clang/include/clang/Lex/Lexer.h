@@ -595,6 +595,10 @@ public:
   static StringRef getIndentationForLine(SourceLocation Loc,
                                          const SourceManager &SM);
 
+  /// Returns the pointer that points to the beginning of line that contains
+  /// the given offset, or null if the offset if invalid.
+  static const char *findBeginningOfLine(StringRef Buffer, unsigned Offset);
+
   /// Check if this is the first time we're lexing the input file.
   bool isFirstTimeLexingFile() const { return IsFirstTimeLexingFile; }
 
